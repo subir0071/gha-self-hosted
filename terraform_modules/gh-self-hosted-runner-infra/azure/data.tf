@@ -4,9 +4,3 @@ data "azurerm_function_app_host_keys" "gha_runner_ahk" {
 
   depends_on = [ azurerm_linux_function_app.gha_runner_receiver_function_app ]
 }
-
-
-
-# data "local_file" "gh_runner_receiver_zip_file" {
-#   filename = local.zip_receiver_file_name
-# }
