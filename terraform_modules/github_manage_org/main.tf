@@ -22,3 +22,4 @@ resource "github_actions_runner_group" "self_hosted_runner_group" {
   allows_public_repositories = false
 }
 
+resource 
