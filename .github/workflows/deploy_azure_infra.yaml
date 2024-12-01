@@ -2,8 +2,6 @@ name: GHA Self-hosted Infra - Azure
 
 on:
   push:
-    branches:
-    - "*"
     paths:
     - terraform_modules/gh-self-hosted-runner-infra/azure/**
 

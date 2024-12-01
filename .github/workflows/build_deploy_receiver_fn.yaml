@@ -1,7 +1,9 @@
-name: Deploy Python project to Azure Function App
+name: Deploy Receiver Function to Azure
 
 on:
-  [push]
+  push:
+    paths:
+    - github-runner-receiver-function/**
 
 env:
   AZURE_FUNCTIONAPP_NAME: ''   # set this to your function app name on Azure
