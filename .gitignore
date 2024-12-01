@@ -1,0 +1,9 @@
+.sensitive.sh
+.vscode
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+*.pem
+.terraform.lock.hcl
+secrets.json
+.venv

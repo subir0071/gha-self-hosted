@@ -1,0 +1,17 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# Set up the application
+WORKDIR /actions-runner
+
+
+RUN python3 --version
+# RUN pip3 install -r script/requirements.txt # jwt
+# RUN pip3 install -r actions-runner/requirements.txt
+# RUN  runner_token=$(python3 generate_jwt.py)
+
+ENTRYPOINT [ "./app.sh" ]
+
+
+
+

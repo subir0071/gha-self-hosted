@@ -1,0 +1,26 @@
+# Start with a base image
+FROM ubuntu:22.04
+
+SHELL ["/bin/bash", "-c"]
+
+# Install necessary tools
+RUN apt-get update && apt-get install -y \
+    curl \
+    jq \
+    tar \
+    python3 \
+    python3-pip \
+    && apt-get clean
+
+# Set working directory
+WORKDIR /actions-runner
+
+RUN LATEST_URL=$(curl -s https://api.github.com/repos/actions/runner/releases/latest | jq -r '.assets[] | select(.name | contains("linux-x64-")).browser_download_url') && \
+curl -L $LATEST_URL -o actions-runner.tar.gz && \
+tar -xzf actions-runner.tar.gz && \
+rm actions-runner.tar.gz
+
+COPY script/* /actions-runner
+
+RUN chmod +x generate_jwt.py app.sh
+

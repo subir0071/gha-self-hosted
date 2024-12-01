@@ -1,0 +1,17 @@
+
+services:
+  base:
+    build:
+      context: ./context
+      dockerfile: Dockerfile.base
+    image: subir0071/gh-runner-base:latest
+
+  runner:
+    build:
+      context: ./context
+      dockerfile: Dockerfile.runner
+      args:
+        BASE_IMAGE: subir0071/gh-runner-base:latest
+    image: subir0071/gh-runner:latest
+    depends_on:
+      - base
