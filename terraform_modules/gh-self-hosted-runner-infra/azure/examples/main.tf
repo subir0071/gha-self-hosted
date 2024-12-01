@@ -12,5 +12,4 @@ module "gh-self-hosted-infra-azure" {
     GITHUB_APP_INSTALLATION_ID = var.GITHUB_APP_INSTALLATION_ID
     GITHUB_APP_PEM_FILE = var.GITHUB_APP_PEM_FILE
     kv_sku_name = var.kv_sku_name
-
 }
