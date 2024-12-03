@@ -3,20 +3,53 @@ name: GHA Self-hosted Infra - Azure
 on:
   push:
     paths:
-    - terraform_modules/gh-self-hosted-runner-infra/azure/**
-
-env:
-  AZURE_FUNCTIONAPP_NAME: ''   # set this to your function app name on Azure
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-receiver-function'       # set this to the path to your function app project, defaults to the repository root
-  PYTHON_VERSION: '3.11'                     # set this to the python version to use (e.g. '3.6', '3.7', '3.8')
+    - create-azure-infra/**
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'yes' to confirm Terraform destroy"
+        required: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: dev
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: create-azure-infra
+
     steps:
     - name: 'Checkout Azure Infra'
       uses: actions/checkout@v4
       with: 
         sparse-checkout:
-          terraform_modules/gh-self-hosted-runner-infra/azure
+          create-azure-infra
+
+    - name: Authenticate with Azure
+      uses: azure/login@v2
+      with:
+        creds: '{"clientId":"${{ secrets.ARM_CLIENT_ID }}", "clientSecret":"${{ secrets.ARM_CLIENT_SECRET }}", "subscriptionId":"${{ secrets.ARM_SUBSCRIPTION_ID }}", "tenantId":"${{ secrets.ARM_TENANT_ID }}"}'
+     
+    - name: "Terraform init"
+      run : |
+        pwd
+        terraform init
+
+    - name: Terraform Apply
+      if: github.event_name == 'push'
+      run: terraform apply -auto-approve tfplan
+    
+    - name: Terraform destroy plan
+      if: github.event.inputs.confirm == 'yes'
+      run:  terraform plan -destroy -out=destroyplan
+
+    - name: Terraform destroy infra
+      if: github.event.inputs.confirm == 'yes'
+      run:  terraform apply -destroy -out=destroyplan
+
+      
+
+
+

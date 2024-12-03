@@ -1,22 +1,23 @@
-locals {
-  current_date = formatdate("YYYYMMDD", timestamp())
+resource "random_string" "resource_code" {
+  length  = 5
+  special = false
+  upper   = false
 }
 
 resource "azurerm_resource_group" "gha_runner_rg" {
-  name     = "${var.project}-rg"
+  name     = "${var.project}-${var.env}-rg"
   location = var.location
 }
 
 # Storage Account
 resource "azurerm_storage_account" "gha_runner_sa" {
-  name                     = "${var.project}${var.env}${local.current_date}" # Unique name for the storage account
+  name                     = "${var.project}${var.env}${random_string.resource_code}" # Unique name for the storage account
   resource_group_name      = azurerm_resource_group.gha_runner_rg.name
   location                 = azurerm_resource_group.gha_runner_rg.location
   account_tier             = var.storage_account_account_tier #"Standard"
   account_replication_type = var.storage_account_replication_type #"LRS"
   account_kind             = "Storage"
 }
-
 
 # App Service Plan (Hosting plan for the function app)
 resource "azurerm_service_plan" "gha_runner_asp" {
