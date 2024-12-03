@@ -35,11 +35,11 @@ jobs:
     - name: "Terraform init"
       run : |
         pwd
-        terraform init -backend-config="${{ github.event.deployment_environment }}-backend-config="backend.config"
+        terraform init -backend-config="${{ github.event.deployment_environment }}-backend-config"
 
     - name: Terraform Apply
       if: github.event_name == 'push'
-      run: terraform apply -var-file=${{ github.event.deployment_environment }}.tfvars \
+      run: terraform apply -var-file="${{ github.event.deployment_environment }}.tfvars" \
         -auto-approve tfplan
     
     - name: Terraform destroy plan
