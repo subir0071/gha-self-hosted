@@ -40,6 +40,11 @@ jobs:
     - name: Terraform Plan
       run: |
         terraform plan -var-file="dev.tfvars" -out="tfplan.out"
+      env:
+        TF_VAR_GITHUB_APP_PEM_FILE: ${{ secrets.TF_VAR_GITHUB_APP_PEM_FILE }}
+        TF_VAR_GITHUB_APP_CLIENTID: ${{ secrets.TF_VAR_GITHUB_APP_CLIENTID }}
+        TF_VAR_GITHUB_APP_ID: ${{ secrets.TF_VAR_GITHUB_APP_ID }}
+        TF_VAR_GITHUB_APP_INSTALLATION_ID: ${{ secrets.TF_VAR_GITHUB_APP_INSTALLATION_ID }}
 
     - name: Terraform Apply
       if: github.event_name == 'push'
