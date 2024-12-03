@@ -39,8 +39,7 @@ jobs:
 
     - name: Terraform Apply
       if: github.event_name == 'push'
-      run: terraform apply -var-file="${{ github.event.deployment_environment }}.tfvars" \
-        -auto-approve tfplan
+      run: terraform apply -var-file="dev.tfvars -auto-approve tfplan
     
     - name: Terraform destroy plan
       if: github.event.inputs.confirm == 'yes'
