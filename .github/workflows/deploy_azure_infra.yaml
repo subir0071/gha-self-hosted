@@ -35,7 +35,7 @@ jobs:
     - name: "Terraform init"
       run : |
         pwd
-        terraform init -backend-config="${{ github.event.deployment_environment }}-backend-config"
+        terraform init -backend-config="dev-backend-config"
 
     - name: Terraform Apply
       if: github.event_name == 'push'
