@@ -32,14 +32,18 @@ jobs:
       with:
         creds: '{"clientId":"${{ secrets.ARM_CLIENT_ID }}", "clientSecret":"${{ secrets.ARM_CLIENT_SECRET }}", "subscriptionId":"${{ secrets.ARM_SUBSCRIPTION_ID }}", "tenantId":"${{ secrets.ARM_TENANT_ID }}"}'
      
-    - name: "Terraform init"
+    - name: Terraform init
       run : |
         pwd
         terraform init -backend-config="dev-backend-config"
 
+    - name: Terraform Plan
+      run: |
+        terraform plan -var-file="dev.tfvars" -out="tfplan.out"
+
     - name: Terraform Apply
       if: github.event_name == 'push'
-      run: terraform apply -var-file="dev.tfvars -auto-approve tfplan
+      run: terraform apply -auto-approve "tfplan.out" 
     
     - name: Terraform destroy plan
       if: github.event.inputs.confirm == 'yes'
