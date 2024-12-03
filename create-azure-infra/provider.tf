@@ -6,7 +6,7 @@ terraform {
     }
   }
   backend "azurerm" {
-      resource_group_name  = azurerm_resource_group.gha_runner_rg.name
+      resource_group_name  = "terraform-backend-rg"
       storage_account_name = azurerm_storage_account.gha_runner_sa.name
       container_name       = azurerm_storage_container.tfstate_container.name
       key                  = "${var.project}-${var.env}-terraform.tfstate"
@@ -23,7 +23,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_storage_container" "tfstate_container" {
-  name                  = ""${var.project}-${var.env}-tfstate-container"
+  name                  = "${var.project}-${var.env}-tfstate-container"
   storage_account_id  = azurerm_storage_account.gha_runner_sa.id
   container_access_type = "private"
 }
