@@ -50,14 +50,14 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       run: terraform apply -auto-approve -lock=false "tfplan.out" 
 
-    # - name: Call workflow to deploy receiver function
-    #   if: ${{ success() }}
-    #   uses: ./.github/workflows/deploy_receiver_function.yml
-    #   with:
-    #     ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-    #     ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-    #     ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-    #     ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+    - name: Call workflow to deploy receiver function
+      if: ${{ success() }}
+      uses: ./.github/workflows/deploy_receiver_function.yml
+      with:
+        ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+        ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+        ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
     
     - name: Terraform destroy plan
