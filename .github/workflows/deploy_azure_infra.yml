@@ -29,6 +29,9 @@ jobs:
         shell: bash
         working-directory: create-azure-infra
 
+    outputs:
+      terraform-apply-success: ${{ steps.terraform-apply.outcome == 'success' }}
+
     steps:
     - name: 'Checkout Azure Infra'
       uses: actions/checkout@v4
@@ -42,8 +45,9 @@ jobs:
     - name: Terraform Plan
       if: ${{ github.event_name == 'push' }}
       run: terraform plan -var-file="dev.tfvars" -out="tfplan.out"
-      
+
     - name: Terraform Apply
+      id: terraform-apply
       if: ${{ github.event_name == 'push' }}
       run: terraform apply -auto-approve -lock=false "tfplan.out" 
 
@@ -57,6 +61,7 @@ jobs:
 
   deploy-receiver-fn-caller: 
     needs: "deploy-azure-infra"
+    if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
     uses: ./.github/workflows/deploy_receiver_function.yml
     secrets: inherit
 
