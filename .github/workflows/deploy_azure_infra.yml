@@ -37,22 +37,16 @@ jobs:
           create-azure-infra
 
     - name: Terraform init
-      if: ${{ github.event_name == 'push' }}
-      run : |
-        pwd
-        terraform init -backend-config="dev-backend.config"
+      run : terraform init -backend-config="dev-backend.config"
 
     - name: Terraform Plan
       if: ${{ github.event_name == 'push' }}
       run: terraform plan -var-file="dev.tfvars" -out="tfplan.out"
-
+      
     - name: Terraform Apply
       if: ${{ github.event_name == 'push' }}
       run: terraform apply -auto-approve -lock=false "tfplan.out" 
 
-    
-
-    
     - name: Terraform destroy plan
       if: github.event.inputs.confirm == 'yes'
       run:  terraform plan -destroy -out=destroyplan -var-file="dev.tfvars"
