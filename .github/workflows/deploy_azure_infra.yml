@@ -1,0 +1,74 @@
+name: GHA Self-hosted Infra - Azure 
+
+on:
+  push:
+    paths:
+    - create-azure-infra/**
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'yes' to confirm Terraform destroy"
+        required: true
+
+jobs:
+  deploy-azure-infra:
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      TF_VAR_GITHUB_APP_PEM_FILE: ${{ secrets.TF_VAR_GITHUB_APP_PEM_FILE }}
+      TF_VAR_GITHUB_APP_CLIENTID: ${{ secrets.TF_VAR_GITHUB_APP_CLIENTID }}
+      TF_VAR_GITHUB_APP_ID: ${{ secrets.TF_VAR_GITHUB_APP_ID }}
+      TF_VAR_GITHUB_APP_INSTALLATION_ID: ${{ secrets.TF_VAR_GITHUB_APP_INSTALLATION_ID }}
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: create-azure-infra
+
+    steps:
+    - name: 'Checkout Azure Infra'
+      uses: actions/checkout@v4
+      with: 
+        sparse-checkout:
+          create-azure-infra
+
+    - name: Terraform init
+      if: ${{ github.event_name == 'push' }}
+      run : |
+        pwd
+        terraform init -backend-config="dev-backend.config"
+
+    - name: Terraform Plan
+      if: ${{ github.event_name == 'push' }}
+      run: terraform plan -var-file="dev.tfvars" -out="tfplan.out"
+
+    - name: Terraform Apply
+      if: ${{ github.event_name == 'push' }}
+      run: terraform apply -auto-approve -lock=false "tfplan.out" 
+
+    # - name: Call workflow to deploy receiver function
+    #   if: ${{ success() }}
+    #   uses: ./.github/workflows/deploy_receiver_function.yml
+    #   with:
+    #     ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+    #     ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+    #     ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+    #     ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+    
+    - name: Terraform destroy plan
+      if: github.event.inputs.confirm == 'yes'
+      run:  terraform plan -destroy -out=destroyplan -var-file="dev.tfvars"
+
+    - name: Terraform destroy infra
+      if: github.event.inputs.confirm == 'yes'
+      run:  terraform apply -destroy "destroyplan"
+
+      
+
+
+

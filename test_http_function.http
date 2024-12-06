@@ -1,0 +1,7 @@
+
+GET https://awesome-dev-receiver-function-app.azurewebsites.net/api/receiver_function?code=enaUkhAGH2-QxR0FNxjntZgXuu-GSakhfo7AEP98NjKMAzFuHjvEOg== HTTP/1.1
+Content-Type: "application/json" 
+
+{
+    "name": "Hello, Subir! Wonderful"
+}
