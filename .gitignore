@@ -7,3 +7,5 @@ terraform.tfstate.backup
 .terraform.lock.hcl
 secrets.json
 .venv
+destroyplan
+secret.*

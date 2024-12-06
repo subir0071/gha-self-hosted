@@ -11,7 +11,7 @@ resource "azurerm_resource_group" "gha_runner_rg" {
 
 # Storage Account
 resource "azurerm_storage_account" "gha_runner_sa" {
-  name                     = "${var.project}${var.env}${random_string.resource_code}" # Unique name for the storage account
+  name                     = "${var.project}${var.env}" # Unique name for the storage account
   resource_group_name      = azurerm_resource_group.gha_runner_rg.name
   location                 = azurerm_resource_group.gha_runner_rg.location
   account_tier             = var.storage_account_account_tier #"Standard"
@@ -116,7 +116,6 @@ resource "azurerm_container_registry" "gha_runner_acr" {
   resource_group_name = azurerm_resource_group.gha_runner_rg.name
   location            = var.location
   sku                 = var.acr_sku
-  admin_enabled       = var.acr_admin_enabled
 }
 
 
@@ -159,22 +158,38 @@ resource "azurerm_key_vault_secret" "gha_kv_gh_app_id" {
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_ID
 
+  lifecycle {
+    ignore_changes = [value] # Prevent Terraform from overwriting the existing value
+  }
+
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_instt_id" {
   name         = "${var.project}-${var.env}-kv-gh-insttid"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_INSTALLATION_ID
+
+   lifecycle {
+    ignore_changes = [value] 
+  }
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_pemfile" {
   name         = "${var.project}-${var.env}-kv-gh-pemfile"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_PEM_FILE
+
+   lifecycle {
+    ignore_changes = [value] 
+  }
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_app_clientid" {
   name         = "${var.project}-${var.env}-kv-gh-app-clientid"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_CLIENTID
+
+   lifecycle {
+    ignore_changes = [value]
+  }
 }

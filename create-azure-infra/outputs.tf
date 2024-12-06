@@ -18,3 +18,8 @@ output "function_app_default_hostname" {
   description = "Deployed function app hostname"
 }
 
+# output "resource_group" {
+#   value = azurerm_resource_group.gha_runner_rg.name
+#   description = "Name of the resource group"
+# }
+

@@ -14,10 +14,6 @@ variable "acr_sku" {
   type = string
 }
 
-variable "acr_admin_enabled" {
-  type = string
-}
-
 variable "app_service_plan_sku_name" {
   type        = string
   description = "Path to the file that contains the secrets in json format"
