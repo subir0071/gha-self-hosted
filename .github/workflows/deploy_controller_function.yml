@@ -1,4 +1,4 @@
-name: Deploy GH Receiver Function Azure Function App
+name: Deploy Controller Function Azure
 
 on:
   push:
