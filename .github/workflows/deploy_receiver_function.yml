@@ -24,15 +24,9 @@ jobs:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v3
 
-    - name: List files
-      run: ls -l
-
-
     - name: Zip function App
       run: zip -r function_app.zip ./ -x .funcignore 
 
-    - name: List files
-      run: ls -l
 
     - name: 'Login via Azure CLI'
       uses: azure/login@v2
