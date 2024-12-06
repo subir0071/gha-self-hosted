@@ -64,10 +64,5 @@ jobs:
   deploy-receiver-fn-caller: 
     needs: "deploy-azure-infra"
     uses: ./.github/workflows/deploy_receiver_function.yml
-    with:
-      secrets: inherit
-        # ARM_SUBSCRIPTION_ID
-        # ARM_CLIENT_ID
-        # ARM_CLIENT_SECRET
-        # ARM_TENANT_ID
+    secrets: inherit
 

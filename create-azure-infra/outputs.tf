@@ -17,3 +17,4 @@ output "function_app_default_hostname" {
   value = azurerm_linux_function_app.gha_runner_receiver_function_app.default_hostname
   description = "Deployed function app hostname"
 }
+
