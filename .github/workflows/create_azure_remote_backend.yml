@@ -2,6 +2,11 @@ name: Create Azure Remote Backend
 
 on:
     workflow_dispatch:
+
+permissions:
+  id-token: write 
+  contents: read  
+
   
 jobs:
   build-and-deploy:
@@ -10,7 +15,6 @@ jobs:
     env:
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   
     defaults:
