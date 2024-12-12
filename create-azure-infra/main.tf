@@ -193,3 +193,4 @@ resource "azurerm_key_vault_secret" "gha_kv_gh_app_clientid" {
     ignore_changes = [value]
   }
 }
+
