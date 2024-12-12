@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_USE_OIDC: true
       TF_VAR_GITHUB_APP_PEM_FILE: ${{ secrets.TF_VAR_GITHUB_APP_PEM_FILE }}
       TF_VAR_GITHUB_APP_CLIENTID: ${{ secrets.TF_VAR_GITHUB_APP_CLIENTID }}
       TF_VAR_GITHUB_APP_ID: ${{ secrets.TF_VAR_GITHUB_APP_ID }}
