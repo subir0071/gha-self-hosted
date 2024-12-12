@@ -25,12 +25,12 @@ jobs:
         sparse-checkout:
           create-azure-infra/remote-state
 
-    - name: Log in to Azure using OIDC
-      uses: azure/login@v2
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    # - name: Log in to Azure using OIDC
+    #   uses: azure/login@v2
+    #   with:
+    #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+    #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           
     - name: Terraform Init - Backend
       run: terraform init
@@ -43,7 +43,9 @@ jobs:
 
         
     - name: Terraform Plan - Backend
-      run: terraform plan -out="tfplan_remote.out"
+      run: |
+        pwd
+        terraform plan -out="tfplan_remote.out"
     
     - name: Terraform Apply - Backend
       run: terraform apply -auto-approve "tfplan_remote.out" 
