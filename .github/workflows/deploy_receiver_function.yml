@@ -42,7 +42,7 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          auth-type: workload-identity
+          auth-type: identity
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
