@@ -10,6 +10,10 @@ on:
   #     AZURE_TENANT_ID:
   #     AZURE_SUBSCRIPTION_ID:
 
+permissions:
+  id-token: write 
+  contents: read  
+
 defaults:
   run:
     shell: bash
