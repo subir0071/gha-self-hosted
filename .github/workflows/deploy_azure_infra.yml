@@ -44,6 +44,9 @@ jobs:
         sparse-checkout:
           create-azure-infra
 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
     - name: Terraform init
       run : terraform init -backend-config="dev-backend.config"
 
