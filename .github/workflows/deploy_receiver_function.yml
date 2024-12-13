@@ -1,5 +1,5 @@
 name: Deploy Receiver Function to Azure
-
+run-name: Deploy Receiver Function to Azure
 on:
   push:
     paths:
@@ -40,8 +40,8 @@ jobs:
           github-runner-receiver-function
 
 
-    - name: Zip function App
-      run: zip -r function_app.zip ./ -x .funcignore 
+    # - name: Zip function App
+    #   run: zip -r function_app.zip ./ -x .funcignore 
 
 
     - name: 'Login via Azure CLI'
@@ -65,6 +65,3 @@ jobs:
         app-name: 'awesomeproj-dev-receiver-function-app' 
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
         
-
-
-  #enable-oryx-build: true

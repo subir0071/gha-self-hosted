@@ -1,4 +1,5 @@
 name: GHA Self-hosted Infra - Azure 
+run-name: GHA Self-hosted Infra - Azure 
 
 on:
   push:
@@ -64,6 +65,12 @@ jobs:
       run:  terraform apply -destroy "destroyplan"
 
   deploy-receiver-fn-caller: 
+    needs: "deploy-azure-infra"
+    if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
+    uses: ./.github/workflows/deploy_receiver_function.yml
+    secrets: inherit
+
+  deploy-controller-fn-caller: 
     needs: "deploy-azure-infra"
     if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
     uses: ./.github/workflows/deploy_receiver_function.yml
