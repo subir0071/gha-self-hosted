@@ -28,7 +28,7 @@ resource "azurerm_storage_account" "terraform_backend_sa" {
 
 resource "azurerm_storage_container" "terraform_backend_sc" {
   name                  = var.storage_container_name 
-  storage_account_id    = azurerm_storage_account.terraform_backend_sa.id
+ # storage_account_id    = azurerm_storage_account.terraform_backend_sa.id
   storage_account_name = azurerm_storage_account.terraform_backend_sa.name
   container_access_type = var.container_access_type
 }
