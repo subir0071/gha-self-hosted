@@ -1,14 +1,32 @@
-name: Deploy GH Receiver Function Azure Function App
-
+name: Deploy Controller Function to sAzure
+run-name: Deploy Controller Function to Azure
 on:
   push:
     paths:
-    - github-runner-receiver-function/**
-  workflow_dispatch:  
+    - github-runner-controller-function/**
+
+  workflow_call:
+
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+
+permissions:
+  id-token: write 
+  contents: read 
+
+defaults:
+  run:
+    shell: bash
+    working-directory: github-runner-controller-function
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'awesomeproj-dev-receiver-function-app'   # set this to your function app name on Azure
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'github-runner-receiver-function'       # set this to the path to your function app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_NAME: 'awesomeproj-dev-controller-function-app'   # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function'       # set this to the path to your function app project, defaults to the repository root
   PYTHON_VERSION: '3.11'                   # set this to the dotnet version to use (e.g. '2.1.x', '3.1.x', '5.0.x')
   
 
@@ -20,35 +38,25 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: github-runner-receiver-function
+        working-directory: github-runner-controller-function
 
     steps:
-    - name: 'Checkout GitHub Action'
+    - name: 'Checkout Controller Function'
       uses: actions/checkout@v4
       with: 
         sparse-checkout:
-          create-azure-infra
+          github-runner-controller-function
 
     - name: 'Login via Azure CLI'
       uses: azure/login@v2
       with:
-        creds: '{"clientId":"${{ secrets.ARM_CLIENT_ID }}","clientSecret":"${{ secrets.ARM_CLIENT_SECRET }}","subscriptionId":"${{ secrets.ARM_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.ARM_TENANT_ID }}"}'
-
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.11' 
-
-    - name: Package Azure Function
-      run: |
-        pwd
-        sleep 5
-        zip -r function_app.zip * 
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
       id: fa
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: 'github-runner-receiver-function/function_app.zip'
-
-# For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
+        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}

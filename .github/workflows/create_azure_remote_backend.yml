@@ -1,15 +1,17 @@
+name: Create Azure Remote Backend
+run-name: Create Azure Remote Backend
 on:
     workflow_dispatch:
-  
+
+permissions:
+  id-token: write 
+  contents: read  
+
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: dev
-    env:
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   
     defaults:
       run:
@@ -22,13 +24,37 @@ jobs:
       with: 
         sparse-checkout:
           create-azure-infra/remote-state
+
+    # - name: Log in to Azure using OIDC
+    #   uses: azure/login@v2
+    #   with:
+    #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+    #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
           
     - name: Terraform Init - Backend
       run: terraform init
+
+
         
     - name: Terraform Plan - Backend
-      run: terraform plan -out="tfplan_remote.out"
+      run: |
+        pwd
+        terraform plan -out="tfplan_remote.out"
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        ARM_USE_OIDC: true
     
     - name: Terraform Apply - Backend
       run: terraform apply -auto-approve "tfplan_remote.out" 
+      env:
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        ARM_USE_OIDC: true
         

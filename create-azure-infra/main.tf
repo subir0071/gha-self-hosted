@@ -118,6 +118,27 @@ resource "azurerm_container_registry" "gha_runner_acr" {
   sku                 = var.acr_sku
 }
 
+resource "azure_container_group" "gha_container_reg" {
+  name                = "${var.container_group_name_prefix}-${random_string.container_name.result}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  ip_address_type     = "Public"
+  os_type             = "Linux"
+  restart_policy      = var.restart_policy
+
+  container {
+    name   = "${var.container_name_prefix}-${random_string.container_name.result}"
+    image  = var.image
+    cpu    = var.cpu_cores
+    memory = var.memory_in_gb
+
+    ports {
+      port     = var.port
+      protocol = "TCP"
+    }
+  }
+}
+
 
 resource "random_id" "gha_key_vault_key_id" {
   byte_length = 4
@@ -193,3 +214,4 @@ resource "azurerm_key_vault_secret" "gha_kv_gh_app_clientid" {
     ignore_changes = [value]
   }
 }
+
