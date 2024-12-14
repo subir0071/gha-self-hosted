@@ -11,7 +11,7 @@ services:
       context: ./context
       dockerfile: Dockerfile.runner
       args:
-        BASE_IMAGE: subir0071/gh-runner-base:latest
+        BASE_IMAGE: "subir0071/gh-runner-base:latest"
     image: subir0071/gh-runner:latest
     depends_on:
       - base

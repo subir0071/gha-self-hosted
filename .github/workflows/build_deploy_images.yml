@@ -1,0 +1,71 @@
+name: Build and Push Runnner images
+run-name: Build and Push Runnner images
+on:
+  push:
+    paths:
+    - github-runner-images/**
+
+  workflow_call:
+
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+
+permissions:
+  id-token: write 
+  contents: read 
+
+defaults:
+  run:
+    shell: bash
+    working-directory: github-runner-images
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+  
+    defaults:
+      run:
+        shell: bash
+        working-directory: github-runner-images
+      
+    steps:
+    - name: 'Checkout Azure Infra'
+      uses: actions/checkout@v4
+      with: 
+        sparse-checkout:
+          github-runner-images
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Build Container Images 
+      run: docker compose build
+    
+    
+    - name: Set current date as env variable
+      run: echo "NOW=$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
+
+      # Build and push the Docker image
+    - name: Build and Push Docker Image
+      run: |
+        # Define variables
+        IMAGE_NAME="gh-runner"
+        ACR_NAME="awesomeprojdevacr"
+        IMAGE_TAG="latest"
+        ACR_LOGIN_SERVER="${ACR_NAME}.azurecr.io"
+
+        # Log in to ACR
+        az acr login --name $ACR_NAME
+
+        # Push the Docker image to ACR
+        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG

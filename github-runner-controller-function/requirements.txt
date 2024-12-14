@@ -4,5 +4,5 @@
 
 azure-functions
 azure-storage-queue
-pip install azure-mgmt-containerinstance
-pip install azure-identity
+azure-mgmt-containerinstance
+azure-identity
