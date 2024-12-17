@@ -73,7 +73,7 @@ jobs:
     - name: Push the images
       run: |
         # Log in to ACR
-        az acr login --name $ACR_NAME
+        az acr login --name awesomeprojdevacr
 
         # Push the Docker image to ACR
         docker push awesomeprojdevacr/gha-runner:$NOW
