@@ -76,4 +76,4 @@ jobs:
         az acr login --name awesomeprojdevacr
 
         # Push the Docker image to ACR
-        docker push awesomeprojdevacr/gha-runner:$NOW
+        docker push awesomeprojdevacr.azurecr.io/gha-runner:$NOW
