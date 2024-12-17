@@ -12,6 +12,3 @@ RUN python3 --version
 
 ENTRYPOINT [ "./app.sh" ]
 
-
-
-
