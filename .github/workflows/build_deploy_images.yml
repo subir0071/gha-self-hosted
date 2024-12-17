@@ -67,7 +67,7 @@ jobs:
         ACR_LOGIN_SERVER="${ACR_NAME}.azurecr.io"
 
     - name: tag the image before push
-      run: docker tag gha-runner:latest $ACR_LOGIN_SERVER/gha-runner:$NOW
+      run: docker tag gha-runner:latest awesomeprojdevacr/gha-runner:$NOW
 
       # Build and push the Docker image
     - name: Push the images
@@ -76,4 +76,4 @@ jobs:
         az acr login --name $ACR_NAME
 
         # Push the Docker image to ACR
-        docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$NOW
+        docker push awesomeprojdevacr/gha-runner:$NOW
