@@ -11,4 +11,3 @@ RUN python3 --version
 # RUN  runner_token=$(python3 generate_jwt.py)
 
 ENTRYPOINT [ "./app.sh" ]
-

@@ -66,8 +66,10 @@ jobs:
         IMAGE_TAG="latest"
         ACR_LOGIN_SERVER="${ACR_NAME}.azurecr.io"
 
+        # todo use env vars for acr params
+        
     - name: tag the image before push
-      run: docker tag gha-runner:latest awesomeprojdevacr/gha-runner:$NOW
+      run: docker tag gha-runner:latest awesomeprojdevacr.azurecr.io/gha-runner:$NOW
 
       # Build and push the Docker image
     - name: Push the images
