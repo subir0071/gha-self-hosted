@@ -23,3 +23,4 @@ rm actions-runner.tar.gz
 COPY script/* /actions-runner
 
 RUN chmod +x generate_jwt.py app.sh
+

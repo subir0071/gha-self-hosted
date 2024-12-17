@@ -55,6 +55,9 @@ jobs:
     - name: Set current date as env variable
       run: echo "NOW=$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
 
+    - name: docker images
+      run: docker images
+
       # Build and push the Docker image
     - name: Build and Push Docker Image
       run: |
