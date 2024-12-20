@@ -78,3 +78,9 @@ jobs:
     if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
     uses: ./.github/workflows/deploy_controller_function.yml
     secrets: inherit
+
+  deploy-runner-images:
+    needs:  "deploy-azure-infra"
+    if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
+    uses: ./.github/workflows/build_deploy_images.yml
+    secrets: inherit
