@@ -11,10 +11,6 @@ on:
         description: "Type 'yes' to confirm Terraform destroy"
         required: true
 
-  workflow_run:
-    workflows: ["Create Azure Remote Backend"]
-    types: [completed]
-
 permissions:
   id-token: write
   contents: read
