@@ -1,4 +1,4 @@
-name: Deploy Controller Function to sAzure
+name: Deploy Controller Function to Azure
 run-name: Deploy Controller Function to Azure
 on:
   push:
