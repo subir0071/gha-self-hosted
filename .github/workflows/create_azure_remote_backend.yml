@@ -9,21 +9,24 @@ permissions:
 
 
 jobs:
-  build-and-deploy:
+  deploy-terraform-backend:
     runs-on: ubuntu-latest
     environment: dev
   
     defaults:
       run:
         shell: bash
-        working-directory: create-azure-infra/remote-state
+        working-directory: remote-state
+
+    outputs:
+      terraform-apply-success: ${{ steps.terraform-apply.outcome == 'success' }}
       
     steps:
     - name: 'Checkout Azure Infra'
       uses: actions/checkout@v4
       with: 
         sparse-checkout:
-          create-azure-infra/remote-state
+          remote-state
 
     # - name: Log in to Azure using OIDC
     #   uses: azure/login@v2
@@ -51,10 +54,17 @@ jobs:
         ARM_USE_OIDC: true
     
     - name: Terraform Apply - Backend
+      id: terraform-apply
       run: terraform apply -auto-approve "tfplan_remote.out" 
       env:
         ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         ARM_USE_OIDC: true
+
+  deploy-receiver-fn-caller: 
+    needs: "deploy-terraform-backend"
+    if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
+    uses: ./.github/workflows/deploy_receiver_function.yml
+    secrets: inherit
         

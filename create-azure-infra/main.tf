@@ -1,9 +1,3 @@
-resource "random_string" "resource_code" {
-  length  = 5
-  special = false
-  upper   = false
-}
-
 resource "azurerm_resource_group" "gha_runner_rg" {
   name     = "${var.project}-${var.env}-rg"
   location = var.location
@@ -73,6 +67,9 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
+    "SUBSCRIPTION_ID"                = data.azurerm_subscription.current.subscription_id
+    "RESOURCE_GROUP_NAME"            = azurerm_resource_group.gha_runner_rg.name
+    "LOCATION"                       = var.location
     "ENABLE_ORYX_BUILD"              = "true"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
     "FUNCTIONS_WORKER_RUNTIME"       = "python"
