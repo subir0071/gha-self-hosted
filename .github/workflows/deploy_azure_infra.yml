@@ -13,8 +13,7 @@ on:
 
   workflow_run:
     workflows: ["Create Azure Remote Backend"]
-    types:
-      - completed
+    types: [completed]
 
 permissions:
   id-token: write
