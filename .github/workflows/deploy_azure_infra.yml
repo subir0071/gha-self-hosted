@@ -76,5 +76,5 @@ jobs:
   deploy-controller-fn-caller: 
     needs: "deploy-azure-infra"
     if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
-    uses: ./.github/workflows/deploy_controller_function.yml
+    uses: ./.github/workflows/deploy_azure_infra.yml
     secrets: inherit
