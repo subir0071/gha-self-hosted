@@ -64,7 +64,7 @@ jobs:
 
   deploy-receiver-fn-caller: 
     needs: "deploy-terraform-backend"
-    if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
+    if: ${{ needs.deploy-terraform-backend.outputs.terraform-apply-success == 'true' }}
     uses: ./.github/workflows/deploy_receiver_function.yml
     secrets: inherit
         
