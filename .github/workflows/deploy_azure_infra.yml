@@ -11,6 +11,11 @@ on:
         description: "Type 'yes' to confirm Terraform destroy"
         required: true
 
+  workflow_run:
+    workflows: ["Create Azure Remote Backend"]
+    types:
+      - completed
+
 permissions:
   id-token: write
   contents: read
@@ -51,12 +56,12 @@ jobs:
       run : terraform init -backend-config="dev-backend.config"
 
     - name: Terraform Plan
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name == 'push' ||  github.event.inputs.confirm != 'yes' }}
       run: terraform plan -var-file="dev.tfvars" -out="tfplan.out"
 
     - name: Terraform Apply
       id: terraform-apply
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name == 'push' ||  github.event.inputs.confirm != 'yes'  }}
       run: terraform apply -auto-approve -lock=false "tfplan.out" 
 
     - name: Terraform destroy plan
