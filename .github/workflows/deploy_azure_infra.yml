@@ -9,7 +9,7 @@ on:
     inputs:
       confirm:
         description: "Type 'yes' to confirm Terraform destroy"
-        required: true
+        required: false
 
 permissions:
   id-token: write
@@ -51,12 +51,12 @@ jobs:
       run : terraform init -backend-config="dev-backend.config"
 
     - name: Terraform Plan
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name == 'push' ||  github.event.inputs.confirm != 'yes' }}
       run: terraform plan -var-file="dev.tfvars" -out="tfplan.out"
 
     - name: Terraform Apply
       id: terraform-apply
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name == 'push' ||  github.event.inputs.confirm != 'yes'  }}
       run: terraform apply -auto-approve -lock=false "tfplan.out" 
 
     - name: Terraform destroy plan
@@ -76,5 +76,11 @@ jobs:
   deploy-controller-fn-caller: 
     needs: "deploy-azure-infra"
     if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
-    uses: ./.github/workflows/deploy_controller_function.yml
+    uses: ./.github/workflows/build_deploy_controller_function.yml
+    secrets: inherit
+
+  deploy-runner-images:
+    needs:  "deploy-azure-infra"
+    if: ${{ needs.deploy-azure-infra.outputs.terraform-apply-success == 'true' }}
+    uses: ./.github/workflows/build_deploy_images.yml
     secrets: inherit

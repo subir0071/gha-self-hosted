@@ -1,9 +1,3 @@
-resource "random_string" "resource_code" {
-  length  = 5
-  special = false
-  upper   = false
-}
-
 resource "azurerm_resource_group" "gha_runner_rg" {
   name     = "${var.project}-${var.env}-rg"
   location = var.location
@@ -73,6 +67,9 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
+    "SUBSCRIPTION_ID"                = data.azurerm_subscription.current.subscription_id
+    "RESOURCE_GROUP_NAME"            = azurerm_resource_group.gha_runner_rg.name
+    "LOCATION"                       = var.location
     "ENABLE_ORYX_BUILD"              = "true"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
     "FUNCTIONS_WORKER_RUNTIME"       = "python"
@@ -116,33 +113,6 @@ resource "azurerm_container_registry" "gha_runner_acr" {
   resource_group_name = azurerm_resource_group.gha_runner_rg.name
   location            = var.location
   sku                 = var.acr_sku
-}
-
-resource "azure_container_group" "gha_container_reg" {
-  name                = "${var.container_group_name_prefix}-${random_string.container_name.result}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  ip_address_type     = "Public"
-  os_type             = "Linux"
-  restart_policy      = var.restart_policy
-
-  container {
-    name   = "${var.container_name_prefix}-${random_string.container_name.result}"
-    image  = var.image
-    cpu    = var.cpu_cores
-    memory = var.memory_in_gb
-
-    ports {
-      port     = var.port
-      protocol = "TCP"
-    }
-  }
-}
-
-
-resource "random_id" "gha_key_vault_key_id" {
-  byte_length = 4
-   
 }
 
 resource "azurerm_key_vault" "gha_runner_kv" {
