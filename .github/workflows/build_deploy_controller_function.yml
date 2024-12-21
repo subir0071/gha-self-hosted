@@ -6,9 +6,23 @@ name: Build and deploy Python project to Azure Function App - awesomeproj-dev-co
 
 on:
   push:
-    branches:
-      - feature/test-workflow
-  workflow_dispatch:
+    paths:
+      - github-runner-controller-function/**
+  
+  workflow_call:
+
+      secrets:
+          AZURE_CLIENT_ID:
+            required: true
+          AZURE_TENANT_ID:
+            required: true
+          AZURE_SUBSCRIPTION_ID:
+            required: true
+
+defaults:
+  run:
+    shell: bash
+    working-directory: github-runner-controller-function
 
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function' # set this to the path to your web app project, defaults to the repository root
@@ -30,6 +44,12 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
+
+      - name: pwd
+        run: pwd
+
+      - name: ls -l
+        run: ls -l
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -53,6 +73,7 @@ jobs:
     
     permissions:
       id-token: write #This is required for requesting the JWT
+      contents: read
 
     steps:
       - name: Download artifact from build job
