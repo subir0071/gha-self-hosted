@@ -1,9 +1,9 @@
 name: Deploy Controller Function to Azure
 run-name: Deploy Controller Function to Azure
 on:
-  push:
-    paths:
-    - github-runner-controller-function/**
+  # push:
+  #   paths:
+  #   - github-runner-controller-function/**
 
   workflow_call:
 
