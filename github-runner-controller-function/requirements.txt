@@ -6,4 +6,3 @@ azure-functions
 azure-storage-queue
 azure-mgmt-containerinstance
 azure-identity
-
