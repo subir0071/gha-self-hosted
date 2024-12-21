@@ -15,6 +15,10 @@ permissions:
   id-token: write
   contents: read
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy-azure-infra:
     runs-on: ubuntu-latest
