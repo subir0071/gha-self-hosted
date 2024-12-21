@@ -10,14 +10,18 @@ on:
       - github-runner-controller-function/**
   
   workflow_call:
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
 
-      secrets:
-          AZURE_CLIENT_ID:
-            required: true
-          AZURE_TENANT_ID:
-            required: true
-          AZURE_SUBSCRIPTION_ID:
-            required: true
+env: # Workflow-level environment variables
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
 
 defaults:
   run:
@@ -31,6 +35,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
