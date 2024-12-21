@@ -61,44 +61,6 @@ jobs:
 
       # Optional: Add step to run tests here
 
-      - name: Zip artifact for deployment
-        run: |
-          ls -l
-          zip release.zip ./* -r
-          ls -l
-
-      - name: pwd
-        run: pwd
-      
-      - name: ls -l
-        run: ls -l
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-app
-          path: |
-            release.zip
-            !venv/
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment: dev
-    
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: python-app
-
-      - name: Unzip artifact for deployment
-        run: unzip release.zip     
-        
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -111,6 +73,6 @@ jobs:
         id: deploy-to-function
         with:
           app-name: 'awesomeproj-dev-controller-function-app'
-          slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           
+     
