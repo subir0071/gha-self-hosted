@@ -8,6 +8,9 @@ on:
   push:
     paths:
       - github-runner-controller-function/**
+      
+  workflow_dispatch:
+
   
   workflow_call:
     secrets:
