@@ -62,7 +62,10 @@ jobs:
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
-        run: zip github-runner-controller-functio/release.zip ./* -r
+        run: |
+          ls -l
+          zip release.zip ./* -r
+          ls -l
 
       - name: pwd
         run: pwd
