@@ -8,7 +8,7 @@ on:
   push:
     paths:
       - github-runner-controller-function/**
-      
+
   workflow_dispatch:
 
   
@@ -21,6 +21,9 @@ on:
       AZURE_SUBSCRIPTION_ID:
         required: true
 
+permissions:
+  id-token: write 
+  contents: read  
 
 defaults:
   run:
