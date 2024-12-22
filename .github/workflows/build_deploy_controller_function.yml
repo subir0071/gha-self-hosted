@@ -8,19 +8,22 @@ on:
   push:
     paths:
       - github-runner-controller-function/**
-      
+
   workflow_dispatch:
 
   
-  workflow_call:
-    secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
+  # workflow_call:
+  #   secrets:
+  #     AZURE_CLIENT_ID:
+  #       required: true
+  #     AZURE_TENANT_ID:
+  #       required: true
+  #     AZURE_SUBSCRIPTION_ID:
+  #       required: true
 
+permissions:
+  id-token: write 
+  contents: read  
 
 defaults:
   run:

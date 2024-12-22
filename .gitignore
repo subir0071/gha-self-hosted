@@ -9,3 +9,4 @@ secrets.json
 .venv
 destroyplan
 secret.*
+test_http_function.http

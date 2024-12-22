@@ -1,3 +1,5 @@
+import logging
+import azure.functions as func
 import os
 from azure.storage.queue import QueueServiceClient
 from azure.identity import DefaultAzureCredential
@@ -27,19 +29,20 @@ MEMORY_IN_GB = float(os.getenv("CONTAINER_MEMORY", 1.5))
 
 def create_container_instance(message_content):
   # Use DefaultAzureCredential for authentication
+  logging.info("Start Containefr Creation function")
   credential = DefaultAzureCredential()
   container_client = ContainerInstanceManagementClient(credential, SUBSCRIPTION_ID)
-        
+  logging.info("Subcription done")
   container_resource_requests = ResourceRequests(cpu=CPU_CORE_COUNT, memory_in_gb=MEMORY_IN_GB)
   container_resource_requirements = ResourceRequirements(requests=container_resource_requests)
-        
+  logging.info("CPU and memory initialized")
   container = Container(
     name=CONTAINER_NAME,
     image=CONTAINER_IMAGE,
     resources=container_resource_requirements,
     ports=[ContainerPort(port=80)]
     )
-        
+  logging.info("Containefr Config done")
   ip_address = IpAddress(ports=[Port(protocol="TCP", port=80)], type="Public")
         
   container_group = ContainerGroup(
@@ -49,13 +52,14 @@ def create_container_instance(message_content):
     ip_address=ip_address,
     restart_policy="OnFailure",
     )
-        
+  logging.info("Container GROUP config done")
   print(f"Creating container instance with content: {message_content}")
   response = container_client.container_groups.begin_create_or_update(
     resource_group_name=RESOURCE_GROUP_NAME,
     container_group_name=CONTAINER_NAME,
     container_group=container_group
     )
+  logging.info("Creation done")
   response.result()  # Wait for the operation to complete
   print("Container instance created successfully.")
 

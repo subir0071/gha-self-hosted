@@ -67,18 +67,18 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
-    "SUBSCRIPTION_ID"                = data.azurerm_subscription.current.subscription_id
-    "RESOURCE_GROUP_NAME"            = azurerm_resource_group.gha_runner_rg.name
-    "LOCATION"                       = var.location
-    "ENABLE_ORYX_BUILD"              = "true"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
-    "FUNCTIONS_WORKER_RUNTIME"       = "python"
-    "AzureWebJobsFeatureFlags"       = "EnableWorkerIndexing"
-    "FUNCTIONS_WORKER_RUNTIME"       = "python"
-    "QUEUE_NAME"                     = azurerm_storage_queue.gh_runner_asq.name
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.gha_runner_aai.instrumentation_key
+    "AZURE_SUBSCRIPTION_ID"                = data.azurerm_client_config.current.subscription_id
+    "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
+    "AZURE_LOCATION"                  = var.location
+    "ENABLE_ORYX_BUILD"               = "true"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"  = "true"
+    "FUNCTIONS_WORKER_RUNTIME"        = "python"
+    "AzureWebJobsFeatureFlags"        = "EnableWorkerIndexing"
+    "FUNCTIONS_WORKER_RUNTIME"        = "python"
+    "QUEUE_NAME"                      = azurerm_storage_queue.gh_runner_asq.name
+    "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
-    "WEBSITE_RUN_FROM_PACKAGE"         = "1" 
+    "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
   }
 
   site_config {
@@ -87,10 +87,16 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     }
   }
 
-  # identity {
-  #   type = "SystemAssigned"
-  # }
+  identity {
+    type = "SystemAssigned"
+  }
 
+}
+
+resource "azurerm_role_assignment" "gha_controller_fn_ra" {
+  scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
+  role_definition_name = data.azurerm_role_definition.aci_contributor.name
+  principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
 }
 
 
