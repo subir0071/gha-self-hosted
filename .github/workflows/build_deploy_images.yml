@@ -5,15 +5,17 @@ on:
     paths:
     - github-runner-images/**
 
-  workflow_call:
+  workflow_dispatch:
 
-    secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
+  # workflow_call:
+
+  #   secrets:
+  #     AZURE_CLIENT_ID:
+  #       required: true
+  #     AZURE_TENANT_ID:
+  #       required: true
+  #     AZURE_SUBSCRIPTION_ID:
+  #       required: true
 
 permissions:
   id-token: write 
