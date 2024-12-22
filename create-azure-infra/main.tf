@@ -95,7 +95,7 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
 
 resource "azurerm_role_assignment" "gha_controller_fn_ra" {
   scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
-  role_definition_name = data.azurerm_role_definition.aci_contributor.id
+  role_definition_name = data.azurerm_role_definition.aci_contributor.name
   principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
 }
 
