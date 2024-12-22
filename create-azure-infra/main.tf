@@ -67,9 +67,9 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
-    "SUBSCRIPTION_ID"                = data.azurerm_subscription.current.subscription_id
-    "RESOURCE_GROUP_NAME"            = azurerm_resource_group.gha_runner_rg.name
-    "LOCATION"                       = var.location
+    "AZURE_SUBSCRIPTION_ID"                = data.azurerm_subscription.current.subscription_id
+    "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
+    "AZURE_LOCATION"                       = var.location
     "ENABLE_ORYX_BUILD"              = "true"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
     "FUNCTIONS_WORKER_RUNTIME"       = "python"
@@ -87,10 +87,16 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     }
   }
 
-  # identity {
-  #   type = "SystemAssigned"
-  # }
+  identity {
+    type = "SystemAssigned"
+  }
 
+}
+
+resource "azurerm_role_assignment" "gha_controller_fn_ra" {
+  scope                = data.azurerm_subscription.current.subscription_id
+  role_definition_name = data.azurerm_role_definition.aci_contributor.id
+  principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
 }
 
 
