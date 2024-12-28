@@ -1,6 +1,7 @@
 import logging
 import azure.functions as func
 import os
+from azure.mgmt.containerinstance.models import ContainerGroupNetworkProtocol
 from azure.storage.queue import QueueServiceClient
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.containerinstance import ContainerInstanceManagementClient
@@ -31,36 +32,46 @@ def create_container_instance(message_content):
   # Use DefaultAzureCredential for authentication
   logging.info("Start Containefr Creation function")
   credential = DefaultAzureCredential()
-  container_client = ContainerInstanceManagementClient(credential, SUBSCRIPTION_ID)
+  aci_client = ContainerInstanceManagementClient(credential, SUBSCRIPTION_ID)
   logging.info("Subcription done")
-  container_resource_requests = ResourceRequests(cpu=CPU_CORE_COUNT, memory_in_gb=MEMORY_IN_GB)
-  container_resource_requirements = ResourceRequirements(requests=container_resource_requests)
+  
+  container_resource_requests = ResourceRequests(memory_in_gb=1, cpu=1.0)
   logging.info("CPU and memory initialized")
-  container = Container(
-    name=CONTAINER_NAME,
-    image=CONTAINER_IMAGE,
-    resources=container_resource_requirements,
-    ports=[ContainerPort(port=80)]
-    )
-  logging.info("Containefr Config done")
-  ip_address = IpAddress(ports=[Port(protocol="TCP", port=80)], type="Public")
-        
-  container_group = ContainerGroup(
-    location=LOCATION,
-    containers=[container],
-    os_type=OperatingSystemTypes.LINUX,
-    ip_address=ip_address,
-    restart_policy="OnFailure",
-    )
-  logging.info("Container GROUP config done")
-  print(f"Creating container instance with content: {message_content}")
-  response = container_client.container_groups.begin_create_or_update(
-    resource_group_name=RESOURCE_GROUP_NAME,
-    container_group_name=CONTAINER_NAME,
-    container_group=container_group
-    )
-  logging.info("Creation done")
-  response.result()  # Wait for the operation to complete
+
+  
+  container_group_name = "test-group"
+  container_image_name = 'microsoft\aci-helloworld:latest'
+
+  # Configure the container
+  container_resource_requirements = ResourceRequirements(
+        requests=container_resource_requests)
+  
+  container = Container(name=container_group_name,
+                          image=container_image_name,
+                          resources=container_resource_requirements,
+                          ports=[ContainerPort(port=80)])
+  
+  logging.info("Container Config done")
+
+  ports = [Port(protocol=ContainerGroupNetworkProtocol.tcp, port=80)]
+
+  group_ip_address = IpAddress(ports=ports,
+                                 dns_name_label=container_group_name,
+                                 type="Public")
+  group = ContainerGroup(location=LOCATION,
+                           containers=[container],
+                           os_type=OperatingSystemTypes.linux,
+                           ip_address=group_ip_address)
+
+  aci_client.container_groups.create_or_update(RESOURCE_GROUP_NAME,
+                                                 container_group_name,
+                                                 group)
+
+  container_group = aci_client.container_groups.get(RESOURCE_GROUP_NAME,
+                                                      container_group_name)
+  
+
+  
   print("Container instance created successfully.")
 
 
