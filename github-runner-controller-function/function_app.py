@@ -40,7 +40,7 @@ def create_container_instance(message_content):
 
   
   container_group_name = "test-group"
-  container_image_name = 'microsoft\aci-helloworld:latest'
+  container_image_name = "nginx:latest"
 
   # Configure the container
   container_resource_requirements = ResourceRequirements(
