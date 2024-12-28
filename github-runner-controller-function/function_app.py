@@ -63,7 +63,7 @@ def create_container_instance(message_content):
                            os_type=OperatingSystemTypes.linux,
                            ip_address=group_ip_address)
 
-  aci_client.container_groups.create_or_update(RESOURCE_GROUP_NAME,
+  aci_client.container_groups.begin_create_or_update(RESOURCE_GROUP_NAME,
                                                  container_group_name,
                                                  group)
 
