@@ -6,4 +6,6 @@ azure-functions
 azure-storage-queue
 azure-mgmt-containerinstance
 azure-identity
-
+azure-containerregistry
+azure-keyvault-secrets
+azure-storage-blob

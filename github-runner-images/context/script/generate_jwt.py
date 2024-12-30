@@ -7,19 +7,6 @@ import subprocess
 PEM_PATH = os.getenv("PEM_PATH", "/home/subir/terraform-modules/terraform-auth-app_private-key.pem")
 GH_CLIENT_ID = os.getenv("GH_CLIENT_ID")
 
-
-# Get PEM file path
-# if len(sys.argv) > 1:
-#     pem = sys.argv[1]
-# else:
-#     pem = input("Enter path of private PEM file: ")
-
-# # Get the Client ID
-# if len(sys.argv) > 2:
-#     client_id = sys.argv[2]
-# else:
-#     client_id = input("Enter your Client ID: ")
-
 # Open PEM
 with open(PEM_PATH, 'rb') as pem_file:
     signing_key = pem_file.read()

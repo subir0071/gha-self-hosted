@@ -1,16 +1,20 @@
 import logging
 import azure.functions as func
 import os
+from azure.containerregistry import ContainerRegistryClient
+from azure.keyvault.secrets import SecretClient
 from azure.mgmt.containerinstance.models import ContainerGroupNetworkProtocol
 from azure.storage.queue import QueueServiceClient
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.containerinstance import ContainerInstanceManagementClient
 from azure.mgmt.containerinstance.models import (
     ContainerGroup,
+    ImageRegistryCredential,
     Container,
     ResourceRequests,
     ResourceRequirements,
     OperatingSystemTypes,
+    EnvironmentVariable,
     ContainerPort,
     Port,
     IpAddress,
@@ -20,6 +24,10 @@ from azure.mgmt.containerinstance.models import (
 app = func.FunctionApp()
 
 # Read configurations from environment variables
+AZURE_CONTAINER_REGISTRY = os.getenv("AZURE_CONTAINER_REGISTRY")
+KV_NAME = os.getenv("AZURE_KV_NAME")
+GH_APP_PEM_FILE_KEY = os.getenv("GH_APP_PEM_FILE")
+GH_APP_INSTT_ID_KEY = os.getenv("GH_APP_INSTT_ID")
 SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID")
 RESOURCE_GROUP_NAME = os.getenv("AZURE_RESOURCE_GROUP")
 LOCATION = os.getenv("AZURE_LOCATION", "eastus2")  # Default to 'eastus2'
@@ -28,7 +36,26 @@ CONTAINER_NAME = os.getenv("CONTAINER_NAME", "my-container")
 CPU_CORE_COUNT = float(os.getenv("CONTAINER_CPU", 1))
 MEMORY_IN_GB = float(os.getenv("CONTAINER_MEMORY", 1.5))
 
-def create_container_instance(message_content):
+def retrieve_kv_secret():
+  key_vault_url = f"https://{ KV_NAME }.vault.azure.net/"
+   
+  credential = DefaultAzureCredential()
+  client = SecretClient(vault_url=key_vault_url, credential=credential)
+   
+  # Retrieve the secret
+  try:
+    gh_app_pem_file = client.get_secret(GH_APP_PEM_FILE_KEY)
+    gh_app_instt_id = client.get_secret(GH_APP_INSTT_ID_KEY)
+    print(f"PEM Value: { gh_app_pem_file.value } and { gh_app_instt_id.value }")
+  except Exception as ex:
+    print(f"An error occurred: {ex}")
+  container_environment_variable = [
+    EnvironmentVariable(name="PEM_file", secure_value=gh_app_pem_file.value),
+    EnvironmentVariable(name="GH_CLIENT_ID", secure_value=gh_app_instt_id.value)
+  ]
+  return container_environment_variable
+
+def create_container_instance(runner_label):
   # Use DefaultAzureCredential for authentication
   logging.info("Start Containefr Creation function")
   credential = DefaultAzureCredential()
@@ -38,30 +65,33 @@ def create_container_instance(message_content):
   container_resource_requests = ResourceRequests(memory_in_gb=1, cpu=1.0)
   logging.info("CPU and memory initialized")
 
+  # Retrieve GH APP secrets from key-vault
+  container_environment_variable = retrieve_kv_secret()
   
-  container_group_name = "test-group"
-  container_image_name = "nginx:latest"
+  # Retrieve requested container image
 
+
+
+  container_group_name = f"{ runner_label }"
+  container_image_name = f"{ AZURE_CONTAINER_REGISTRY }/{ runner_label }:latest"
+  
   # Configure the container
   container_resource_requirements = ResourceRequirements(
         requests=container_resource_requests)
   
+  
   container = Container(name=container_group_name,
                           image=container_image_name,
                           resources=container_resource_requirements,
+                          environment_variables=container_environment_variable,
                           ports=[ContainerPort(port=80)])
   
   logging.info("Container Config done")
 
-  ports = [Port(protocol=ContainerGroupNetworkProtocol.tcp, port=80)]
-
-  group_ip_address = IpAddress(ports=ports,
-                                 dns_name_label=container_group_name,
-                                 type="Public")
   group = ContainerGroup(location=LOCATION,
                            containers=[container],
                            os_type=OperatingSystemTypes.linux,
-                           ip_address=group_ip_address)
+                           identity = {"type": "SystemAssigned"})
 
   aci_client.container_groups.begin_create_or_update(RESOURCE_GROUP_NAME,
                                                  container_group_name,
@@ -81,7 +111,8 @@ def create_container_instance(message_content):
 def controller_function(azqueue: func.QueueMessage):
     logging.info('Python Queue trigger processed a message: %s',
                 azqueue.get_body().decode('utf-8'))
-    create_container_instance(azqueue.get_body().decode('utf-8'))
+    runner_label = parse_webhook_payload(azqueue.get_body().decode('utf-8'))
+    create_container_instance(runner_label)
     
 
 

@@ -17,10 +17,16 @@ def receiver_function(req: func.HttpRequest, msg: func.Out[str]) -> func.HttpRes
         req_body = req.get_json()
     except ValueError:
         return func.HttpResponse("Invalid JSON payload.", status_code=400)
+    request_action = req_body.get('action')
+    if request_action != 'queued':
+        return func.HttpResponse(f"No runner created for {request_action} webhook", status_code=200)
+    queue_dict = {"label": req_body.get('labels')}
+    msg
+
 
     try:
         # Serialize the JSON to a string to send to the queue
-        message = json.dumps(req_body)
+        message = json.dumps(queue_dict)
 
         # Send the message to the queue
         msg.set(message)
