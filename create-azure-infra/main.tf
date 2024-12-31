@@ -103,6 +103,12 @@ resource "azurerm_role_assignment" "gha_controller_fn_ra" {
   principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
 }
 
+resource "azurerm_role_assignment" "keyvault_secrets_user" {
+  scope                = azurerm_key_vault.gha_runner_kv.id
+  role_definition_name = data.azurerm_role_definition.akv_reader.name
+  principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
+}
+
 
 # Azure Storage Queue
 resource "azurerm_storage_queue" "gh_runner_asq" {
