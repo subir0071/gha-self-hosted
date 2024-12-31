@@ -42,7 +42,8 @@ def retrieve_kv_secret():
    
   credential = DefaultAzureCredential()
   client = SecretClient(vault_url=key_vault_url, credential=credential)
-   
+  gh_app_pem_file = None
+  gh_app_instt_id = None
   # Retrieve the secret
   try:
     gh_app_pem_file = client.get_secret(GH_APP_PEM_FILE_KEY)
