@@ -1,6 +1,7 @@
 import logging
 import azure.functions as func
 import os
+import json
 from azure.containerregistry import ContainerRegistryClient
 from azure.keyvault.secrets import SecretClient
 from azure.mgmt.containerinstance.models import ContainerGroupNetworkProtocol
@@ -105,13 +106,18 @@ def create_container_instance(runner_label):
   print("Container instance created successfully.")
 
 
+def parse_incoming_payload(msg):
+  data = json.loads(msg)
+  labels = data.get("labels", [])
+  return labels
+
 
 @app.queue_trigger(arg_name="azqueue", queue_name=os.getenv("QUEUE_NAME"),
                                connection="storageAccountConnectionString") 
 def controller_function(azqueue: func.QueueMessage):
     logging.info('Python Queue trigger processed a message: %s',
                 azqueue.get_body().decode('utf-8'))
-    runner_label = parse_webhook_payload(azqueue.get_body().decode('utf-8'))
+    runner_label = parse_incoming_payload(azqueue.get_body().decode('utf-8'))
     create_container_instance(runner_label)
     
 
