@@ -5,7 +5,7 @@ data "azurerm_role_definition" "aci_contributor" {
 }
 
 data "azurerm_role_definition" "akv_reader" {
-  name = "Key Vault Contributor"  # Role name"
+  name = "Key Vault Administrator"  # Role name"
 }
 
 data "azurerm_client_config" "current" {}
