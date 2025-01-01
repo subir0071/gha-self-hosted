@@ -166,9 +166,6 @@ resource "azurerm_key_vault_secret" "gha_kv_gh_app_id" {
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_ID
 
-  lifecycle {
-    ignore_changes = [value] # Prevent Terraform from overwriting the existing value
-  }
 
 }
 
@@ -177,9 +174,6 @@ resource "azurerm_key_vault_secret" "gha_kv_gh_instt_id" {
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_INSTALLATION_ID
 
-   lifecycle {
-    ignore_changes = [value] 
-  }
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_pemfile" {
