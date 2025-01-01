@@ -82,7 +82,7 @@ def create_container_instance(runner_label):
         requests=container_resource_requests)
   
   
-  container = Container(name=runner_label,
+  container = Container(name="test-container",
                           image=container_image_name,
                           resources=container_resource_requirements,
                           environment_variables=container_environment_variable,
@@ -95,12 +95,12 @@ def create_container_instance(runner_label):
                            os_type=OperatingSystemTypes.linux,
                            identity = {"type": "SystemAssigned"})
 
-  aci_client.container_groups.begin_create_or_update(RESOURCE_GROUP_NAME,
-                                                 container_group_name,
-                                                 group)
+  aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
+                                                 container_group_name="container-group",
+                                                 container_group=group)
 
   container_group = aci_client.container_groups.get(RESOURCE_GROUP_NAME,
-                                                      container_group_name)
+                                                      "container-group")
   
 
   
