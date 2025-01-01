@@ -4,12 +4,12 @@ import os
 import jwt
 import subprocess
 
-PEM_PATH = os.getenv("PEM_PATH", "/home/subir/terraform-modules/terraform-auth-app_private-key.pem")
+PEM_FILE = os.getenv("PEM_FILE")
 GH_CLIENT_ID = os.getenv("GH_CLIENT_ID")
 
 # Open PEM
-with open(PEM_PATH, 'rb') as pem_file:
-    signing_key = pem_file.read()
+# with open(PEM_PATH, 'rb') as pem_file:
+#     signing_key = pem_file.read()
 
 payload = {
     # Issued at time
@@ -21,7 +21,7 @@ payload = {
 }
 
 # Create JWT
-encoded_jwt = jwt.encode(payload, signing_key, algorithm='RS256')
+encoded_jwt = jwt.encode(payload, PEM_FILE, algorithm='RS256') #signing_key
 
 print(encoded_jwt)
 
