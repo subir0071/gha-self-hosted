@@ -70,7 +70,7 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     "AZURE_CONTAINER_REGISTRY"        = azurerm_container_registry.gha_runner_acr.name
     "AZURE_KV_NAME"                   = azurerm_key_vault.gha_runner_kv.name
     "GH_APP_PEM_FILE"                 = azurerm_key_vault_secret.gha_kv_gh_pemfile.name
-    "GH_APP_INSTT_ID"                 = azurerm_key_vault_secret.gha_kv_gh_instt_id.name
+    "GH_APP_CLIENT_ID"                 = azurerm_key_vault_secret.gha_kv_gh_app_clientid.name
     "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
     "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
     "AZURE_LOCATION"                  = var.location
