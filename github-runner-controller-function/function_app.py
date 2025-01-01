@@ -75,7 +75,8 @@ def create_container_instance(runner_label):
 
 
   # container_group_name = f"{ runner_label }"
-  container_image_name = f"{ AZURE_CONTAINER_REGISTRY }/{ runner_label }:latest"
+  # container_image_name = f"{ AZURE_CONTAINER_REGISTRY }/{ runner_label }:latest"
+  container_image_name="awesomeprojdevacr/gha-runner:202501010134"
   
   # Configure the container
   container_resource_requirements = ResourceRequirements(
