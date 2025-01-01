@@ -9,3 +9,4 @@ azure-identity
 azure-containerregistry
 azure-keyvault-secrets
 azure-storage-blob
+azure-mgmt-containerregistry
