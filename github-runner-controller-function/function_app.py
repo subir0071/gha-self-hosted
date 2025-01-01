@@ -74,7 +74,7 @@ def create_container_instance(runner_label):
 
 
 
-  container_group_name = f"{ runner_label }"
+  # container_group_name = f"{ runner_label }"
   container_image_name = f"{ AZURE_CONTAINER_REGISTRY }/{ runner_label }:latest"
   
   # Configure the container
@@ -82,7 +82,7 @@ def create_container_instance(runner_label):
         requests=container_resource_requests)
   
   
-  container = Container(name=container_group_name,
+  container = Container(name=runner_label,
                           image=container_image_name,
                           resources=container_resource_requirements,
                           environment_variables=container_environment_variable,
