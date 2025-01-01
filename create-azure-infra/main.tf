@@ -138,26 +138,27 @@ resource "azurerm_key_vault" "gha_runner_kv" {
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = var.kv_sku_name
   soft_delete_retention_days = 7
+  enable_rbac_authorization = true
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
+  # access_policy {
+  #   tenant_id = data.azurerm_client_config.current.tenant_id
+  #   object_id = data.azurerm_client_config.current.object_id
 
-    key_permissions = [
-      "Create",
-      "Delete",
-      "Get",
-      "Purge",
-      "Recover",
-      "Update",
-      "GetRotationPolicy",
-      "SetRotationPolicy"
-    ]
+  #   key_permissions = [
+  #     "Create",
+  #     "Delete",
+  #     "Get",
+  #     "Purge",
+  #     "Recover",
+  #     "Update",
+  #     "GetRotationPolicy",
+  #     "SetRotationPolicy"
+  #   ]
 
-    secret_permissions = [
-      "Set", "Get", "List", "Delete", "Purge",
-    ]
-  }
+  #   secret_permissions = [
+  #     "Set", "Get", "List", "Delete", "Purge",
+  #   ]
+  # }
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_app_id" {
