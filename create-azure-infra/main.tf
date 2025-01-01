@@ -105,8 +105,14 @@ resource "azurerm_role_assignment" "gha_controller_fn_ra" {
 
 resource "azurerm_role_assignment" "keyvault_secrets_user" {
   scope                = azurerm_key_vault.gha_runner_kv.id
-  role_definition_name = data.azurerm_role_definition.akv_admin.name
+  role_definition_name = data.azurerm_role_definition.akv_reader.name
   principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
+}
+
+resource "azurerm_role_assignment" "keyvault_secrets_officer" {
+  scope                = azurerm_key_vault.gha_runner_kv.id
+  role_definition_name = data.azurerm_role_definition.akv_secret_officer.name
+  principal_id         = data.azurerm_client_config.current.client_id
 }
 
 
