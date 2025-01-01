@@ -109,12 +109,11 @@ resource "azurerm_role_assignment" "keyvault_secrets_user" {
   principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
 }
 
-# resource "azurerm_role_assignment" "keyvault_secrets_officer" {
-#   scope                = azurerm_key_vault.gha_runner_kv.id
-#   role_definition_name = data.azurerm_role_definition.akv_secret_officer.name
-#   principal_id         = data.azurerm_client_config.current.client_id
-# }
-
+resource "azurerm_role_assignment" "acr_pull" {
+  scope                = azurerm_container_registry.gha_runner_acr.id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
+}
 
 # Azure Storage Queue
 resource "azurerm_storage_queue" "gh_runner_asq" {
@@ -145,41 +144,18 @@ resource "azurerm_key_vault" "gha_runner_kv" {
   sku_name                   = var.kv_sku_name
   soft_delete_retention_days = 7
   enable_rbac_authorization = true
-
-  # access_policy {
-  #   tenant_id = data.azurerm_client_config.current.tenant_id
-  #   object_id = data.azurerm_client_config.current.object_id
-
-  #   key_permissions = [
-  #     "Create",
-  #     "Delete",
-  #     "Get",
-  #     "Purge",
-  #     "Recover",
-  #     "Update",
-  #     "GetRotationPolicy",
-  #     "SetRotationPolicy"
-  #   ]
-
-  #   secret_permissions = [
-  #     "Set", "Get", "List", "Delete", "Purge",
-  #   ]
-  # }
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_app_id" {
   name         = "${var.project}-${var.env}-kv-gh-appid"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_ID
-
-
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_instt_id" {
   name         = "${var.project}-${var.env}-kv-gh-insttid"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_INSTALLATION_ID
-
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_pemfile" {
@@ -193,4 +169,3 @@ resource "azurerm_key_vault_secret" "gha_kv_gh_app_clientid" {
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_CLIENTID
 }
-
