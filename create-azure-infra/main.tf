@@ -180,19 +180,11 @@ resource "azurerm_key_vault_secret" "gha_kv_gh_pemfile" {
   name         = "${var.project}-${var.env}-kv-gh-pemfile"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_PEM_FILE
-
-   lifecycle {
-    ignore_changes = [value] 
-  }
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_app_clientid" {
   name         = "${var.project}-${var.env}-kv-gh-app-clientid"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_CLIENTID
-
-   lifecycle {
-    ignore_changes = [value]
-  }
 }
 
