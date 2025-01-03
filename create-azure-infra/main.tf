@@ -174,5 +174,5 @@ resource "azurerm_user_assigned_identity" "gha_runner_uai" {
 resource "azurerm_role_assignment" "acr_pull" {
   scope                = azurerm_container_registry.gha_runner_acr.id
   role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.main.principal_id
+  principal_id         = azurerm_user_assigned_identity.gha_runner_uai.principal_id
 }
