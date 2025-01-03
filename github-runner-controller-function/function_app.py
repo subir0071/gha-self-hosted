@@ -37,6 +37,7 @@ CONTAINER_IMAGE = os.getenv("CONTAINER_IMAGE", "nginx")  # Default to 'nginx'
 CONTAINER_NAME = os.getenv("CONTAINER_NAME", "my-container")
 CPU_CORE_COUNT = float(os.getenv("CONTAINER_CPU", 1))
 MEMORY_IN_GB = float(os.getenv("CONTAINER_MEMORY", 1.5))
+USER_ASSIGNED_IDENTITY_NAME = os.getenv("AZURE_USER_ASSIGNED_IDENT_NAME")
 
 def retrieve_kv_secret():
   key_vault_url = f"https://{ KV_NAME }.vault.azure.net/"
@@ -49,7 +50,7 @@ def retrieve_kv_secret():
   try:
     gh_app_pem_file = client.get_secret(GH_APP_PEM_FILE_KEY)
     gh_app_client_id = client.get_secret(GH_APP_CLIENT_ID_KEY)
-    logging.info(f"PEM Value: { gh_app_pem_file.value } and { gh_app_client_id.value }")
+    logging.info(f"gh client id { gh_app_client_id.value }")
   except Exception as ex:
     print(f"An error occurred: {ex}")
   container_environment_variable = [
@@ -71,22 +72,6 @@ def create_container_instance(runner_label):
   # Retrieve GH APP secrets from key-vault
   container_environment_variable = retrieve_kv_secret()
   
-  # Retrieve requested container image
-  acr_client = ContainerRegistryManagementClient(credential, SUBSCRIPTION_ID)
-
-  # Get the ACR login server (optional if you already know it)
-  acr = acr_client.registries.get(resource_group_name=RESOURCE_GROUP_NAME, 
-                                  registry_name="awesomeprojdevacr")
-  acr_login_server = acr.login_server
-  logging.info(f"ACR Login Server: {acr_login_server}")
-
-  # Use the managed identity to fetch an access token
-  token = acr_client.registries.get_credentials(resource_group_name=RESOURCE_GROUP_NAME,
-                                                 registry_name="awesomeprojdevacr")
-  acr_username = token.username
-  acr_password = token.passwords[0].value
-
-
 
   # container_group_name = f"{ runner_label }"
   # container_image_name = f"{ AZURE_CONTAINER_REGISTRY }/{ runner_label }:latest"
@@ -104,20 +89,15 @@ def create_container_instance(runner_label):
                           ports=[ContainerPort(port=80)])
   
   logging.info("Container Config done")
-
-  # Add ACR credentials to the container group
-  image_registry_credentials = [
-    ImageRegistryCredential(
-        server=acr_login_server,
-        username=acr_username,  # From the token
-        password=acr_password,  # From the token
-    )
-]
-  # identity = {"type": "SystemAssigned"}
+  identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/your_identity_name"
   group = ContainerGroup(location=LOCATION,
                            containers=[container],
                            os_type=OperatingSystemTypes.linux,
-                           image_registry_credentials=image_registry_credentials
+                           identity={"type": "UserAssigned",
+                                     "user_assigned_identities": {
+                                         identity_resource_id: {}
+                                      }
+                                    }
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
