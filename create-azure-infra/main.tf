@@ -110,6 +110,13 @@ resource "azurerm_role_assignment" "keyvault_secrets_user" {
   principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
 }
 
+# Role Assignment to allow System Assigned Identity to assign UAMI
+resource "azurerm_role_assignment" "uami_assign" {
+  scope                = azurerm_user_assigned_identity.gha_runner_uai.id
+  role_definition_name = "Managed Identity Operator"
+  principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
+}
+
 # Azure Storage Queue
 resource "azurerm_storage_queue" "gh_runner_asq" {
   name                 = "${var.project}-${var.env}-queue"
