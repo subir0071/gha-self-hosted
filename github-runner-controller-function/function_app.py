@@ -89,7 +89,7 @@ def create_container_instance(runner_label):
                           ports=[ContainerPort(port=80)])
   
   logging.info("Container Config done")
-  identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/your_identity_name"
+  identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
   group = ContainerGroup(location=LOCATION,
                            containers=[container],
                            os_type=OperatingSystemTypes.linux,
