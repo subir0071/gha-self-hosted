@@ -75,8 +75,8 @@ def create_container_instance(runner_label):
 
   # container_group_name = f"{ runner_label }"
   # container_image_name = f"{ AZURE_CONTAINER_REGISTRY }/{ runner_label }:latest"
-  #container_image_name="awesomeprojdevacr.azurecr.io/gha-runner:202501030115"
-  container_image_name = "nginx:latest"
+  container_image_name="awesomeprojdevacr.azurecr.io/gha-runner:202501030115"
+  #container_image_name = "nginx:latest"
   
   # Configure the container
   container_resource_requirements = ResourceRequirements(
