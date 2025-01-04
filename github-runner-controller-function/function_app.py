@@ -81,6 +81,14 @@ def create_container_instance(runner_label):
   # Configure the container
   container_resource_requirements = ResourceRequirements(
         requests=container_resource_requests)
+
+
+  identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
+  identity={"type": "UserAssigned",
+          "user_assigned_identities": {
+              identity_resource_id: {}
+              }
+          }
   
   
   container = Container(name="test-container",
@@ -90,15 +98,11 @@ def create_container_instance(runner_label):
                           ports=[ContainerPort(port=80)])
   
   logging.info("Container Config done")
-  identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
   group = ContainerGroup(location=LOCATION,
                            containers=[container],
                            os_type=OperatingSystemTypes.linux,
-                           identity={"type": "UserAssigned",
-                                     "user_assigned_identities": {
-                                         identity_resource_id: {}
-                                      }
-                                    }
+                           identity=identity,
+                           restart_policy="OnFailure"
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
