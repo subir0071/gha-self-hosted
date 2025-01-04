@@ -136,6 +136,7 @@ resource "azurerm_container_registry" "gha_runner_acr" {
   resource_group_name = azurerm_resource_group.gha_runner_rg.name
   location            = var.location
   sku                 = var.acr_sku
+  admin_enabled       = true
 }
 
 resource "azurerm_key_vault" "gha_runner_kv" {
