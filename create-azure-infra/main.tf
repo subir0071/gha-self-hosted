@@ -67,7 +67,6 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
-    "AZURE_USER_ASSIGNED_IDENT_NAME"  = azurerm_user_assigned_identity.gha_runner_uai.name
     "AZURE_CONTAINER_REGISTRY"        = azurerm_container_registry.gha_runner_acr.name
     "AZURE_KV_NAME"                   = azurerm_key_vault.gha_runner_kv.name
     "GH_APP_PEM_FILE"                 = azurerm_key_vault_secret.gha_kv_gh_pemfile.name
@@ -107,13 +106,6 @@ resource "azurerm_role_assignment" "gha_controller_fn_ra" {
 resource "azurerm_role_assignment" "keyvault_secrets_user" {
   scope                = azurerm_key_vault.gha_runner_kv.id
   role_definition_name = data.azurerm_role_definition.akv_reader.name
-  principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
-}
-
-# Role Assignment to allow System Assigned Identity to assign UAMI
-resource "azurerm_role_assignment" "uami_assign" {
-  scope                = azurerm_user_assigned_identity.gha_runner_uai.id
-  role_definition_name = "Managed Identity Operator"
   principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
 }
 
@@ -173,14 +165,14 @@ resource "azurerm_key_vault_secret" "gha_kv_gh_app_clientid" {
   value =  var.GITHUB_APP_CLIENTID
 }
 
-resource "azurerm_user_assigned_identity" "gha_runner_uai" {
-  name                = "${var.project}-${var.env}-identity"
-  resource_group_name = azurerm_resource_group.gha_runner_rg.name
-  location            = var.location
+resource "azurerm_key_vault_secret" "gha_kv_acr_username" {
+  name         = "${var.project}-${var.env}-kv-acr-username"
+  key_vault_id = azurerm_key_vault.gha_runner_kv.id
+  value =  azurerm_container_registry.gha_runner_acr.admin_username
 }
 
-resource "azurerm_role_assignment" "acr_pull" {
-  scope                = azurerm_container_registry.gha_runner_acr.id
-  role_definition_name = "AcrPull"
-  principal_id         = azurerm_user_assigned_identity.gha_runner_uai.principal_id
+resource "azurerm_key_vault_secret" "gha_kv_acr_pass" {
+  name         = "${var.project}-${var.env}-kv-acr-pass"
+  key_vault_id = azurerm_key_vault.gha_runner_kv.id
+  value =  azurerm_container_registry.gha_runner_acr.admin_password
 }
