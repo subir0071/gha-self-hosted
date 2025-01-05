@@ -112,7 +112,13 @@ def create_container_instance(runner_label):
                            os_type=OperatingSystemTypes.linux,
                           # identity=identity,
                            restart_policy="OnFailure",
-                           ImageRegistryCredential=image_registry_credentials
+                           image_registry_credentials = [
+                              ImageRegistryCredential(
+                                  server=f"{AZURE_CONTAINER_REGISTRY}.azurecr.io",
+                                  username=ACR_USER,
+                                  password=ACR_PASS,
+                              )
+                            ]
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
