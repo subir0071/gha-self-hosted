@@ -28,6 +28,8 @@ app = func.FunctionApp()
 # Read configurations from environment variables
 AZURE_CONTAINER_REGISTRY = os.getenv("AZURE_CONTAINER_REGISTRY")
 KV_NAME = os.getenv("AZURE_KV_NAME")
+ACR_USER = os.getenv("AZURE_ACR_USER")
+ACR_PASS = os.getenv("AZURE_ACR_PASS")
 GH_APP_PEM_FILE_KEY = os.getenv("GH_APP_PEM_FILE")
 GH_APP_CLIENT_ID_KEY = os.getenv("GH_APP_CLIENT_ID")
 SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID")
@@ -82,6 +84,13 @@ def create_container_instance(runner_label):
   container_resource_requirements = ResourceRequirements(
         requests=container_resource_requests)
 
+  image_registry_credentials = [
+    ImageRegistryCredential(
+        server=f"{AZURE_CONTAINER_REGISTRY}.azurecr.io",
+        username=ACR_USER,
+        password=ACR_PASS,
+    )
+]
 
   identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
   identity={"type": "UserAssigned",
@@ -102,7 +111,8 @@ def create_container_instance(runner_label):
                            containers=[container],
                            os_type=OperatingSystemTypes.linux,
                            identity=identity,
-                           restart_policy="OnFailure"
+                           restart_policy="OnFailure",
+                           ImageRegistryCredential=image_registry_credentials
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
