@@ -84,14 +84,8 @@ def create_container_instance(runner_label):
   container_resource_requirements = ResourceRequirements(
         requests=container_resource_requests)
 
-  image_registry_credentials = [
-    ImageRegistryCredential(
-        server=f"{AZURE_CONTAINER_REGISTRY}.azurecr.io",
-        username=ACR_USER,
-        password=ACR_PASS,
-    )
-]
-
+  logging.info(f"acr user {ACR_USER} and pass {ACR_PASS}")
+ 
   # identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
   # identity={"type": "UserAssigned",
   #         "user_assigned_identities": {
