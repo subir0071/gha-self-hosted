@@ -64,8 +64,8 @@ def retrieve_kv_secret():
   image_registry_credentials = [
     ImageRegistryCredential(
       server=f"{AZURE_CONTAINER_REGISTRY}.azurecr.io",
-      username=acr_user,
-      password=acr_pass
+      username=acr_user.value,
+      password=acr_pass.value
     )
   ]
   return container_environment_variable, image_registry_credentials
