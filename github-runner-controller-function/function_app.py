@@ -48,12 +48,14 @@ def retrieve_kv_secret():
   client = SecretClient(vault_url=key_vault_url, credential=credential)
   gh_app_pem_file = None
   gh_app_client_id = None
+  acr_user = None
+  acr_pass = None
   # Retrieve the secret
   try:
     gh_app_pem_file = client.get_secret(GH_APP_PEM_FILE_KEY)
     gh_app_client_id = client.get_secret(GH_APP_CLIENT_ID_KEY)
-    acr_user = client.get_secret("ACR_USER")
-    acr_pass = client.get_secret("ACR_PASS")
+    acr_user = client.get_secret(ACR_USER)
+    acr_pass = client.get_secret(ACR_PASS)
     logging.info(f"gh client id { gh_app_client_id.value }")
   except Exception as ex:
     print(f"An error occurred: {ex}")
