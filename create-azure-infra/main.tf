@@ -69,6 +69,8 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
   app_settings = {
     "AZURE_CONTAINER_REGISTRY"        = azurerm_container_registry.gha_runner_acr.name
     "AZURE_KV_NAME"                   = azurerm_key_vault.gha_runner_kv.name
+    "AZURE_ACR_USER"                  = azurerm_key_vault_secret.gha_kv_acr_username.name
+    "AZURE_ACR_PASS"                  = azurerm_key_vault_secret.gha_kv_acr_pass.name
     "GH_APP_PEM_FILE"                 = azurerm_key_vault_secret.gha_kv_gh_pemfile.name
     "GH_APP_CLIENT_ID"                 = azurerm_key_vault_secret.gha_kv_gh_app_clientid.name
     "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
