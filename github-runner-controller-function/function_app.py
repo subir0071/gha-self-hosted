@@ -52,6 +52,8 @@ def retrieve_kv_secret():
   try:
     gh_app_pem_file = client.get_secret(GH_APP_PEM_FILE_KEY)
     gh_app_client_id = client.get_secret(GH_APP_CLIENT_ID_KEY)
+    acr_user = client.get_secret("ACR_USER")
+    acr_pass = client.get_secret("ACR_PASS")
     logging.info(f"gh client id { gh_app_client_id.value }")
   except Exception as ex:
     print(f"An error occurred: {ex}")
@@ -59,7 +61,14 @@ def retrieve_kv_secret():
     EnvironmentVariable(name="PEM_file", secure_value=gh_app_pem_file.value),
     EnvironmentVariable(name="GH_CLIENT_ID", secure_value=gh_app_client_id.value)
   ]
-  return container_environment_variable
+  image_registry_credentials = [
+    ImageRegistryCredential(
+      server=f"{AZURE_CONTAINER_REGISTRY}.azurecr.io",
+      username=acr_user,
+      password=acr_pass,
+    )
+  ]
+  return container_environment_variable, image_registry_credentials
 
 def create_container_instance(runner_label):
   # Use DefaultAzureCredential for authentication
@@ -72,7 +81,7 @@ def create_container_instance(runner_label):
   logging.info("CPU and memory initialized")
 
   # Retrieve GH APP secrets from key-vault
-  container_environment_variable = retrieve_kv_secret()
+  container_environment_variable, image_registry_credentials = retrieve_kv_secret()
   
 
   # container_group_name = f"{ runner_label }"
@@ -83,8 +92,6 @@ def create_container_instance(runner_label):
   # Configure the container
   container_resource_requirements = ResourceRequirements(
         requests=container_resource_requests)
-
-  logging.info(f"acr user {ACR_USER} and pass {ACR_PASS}")
  
   # identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
   # identity={"type": "UserAssigned",
@@ -106,13 +113,7 @@ def create_container_instance(runner_label):
                            os_type=OperatingSystemTypes.linux,
                           # identity=identity,
                            restart_policy="OnFailure",
-                           image_registry_credentials = [
-                              ImageRegistryCredential(
-                                  server=f"{AZURE_CONTAINER_REGISTRY}.azurecr.io",
-                                  username=ACR_USER,
-                                  password=ACR_PASS,
-                              )
-                            ]
+                           image_registry_credentials=image_registry_credentials
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
