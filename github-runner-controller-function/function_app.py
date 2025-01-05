@@ -92,12 +92,12 @@ def create_container_instance(runner_label):
     )
 ]
 
-  identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
-  identity={"type": "UserAssigned",
-          "user_assigned_identities": {
-              identity_resource_id: {}
-              }
-          }
+  # identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
+  # identity={"type": "UserAssigned",
+  #         "user_assigned_identities": {
+  #             identity_resource_id: {}
+  #             }
+  #         }
   
   
   container = Container(name="test-container",
@@ -110,7 +110,7 @@ def create_container_instance(runner_label):
   group = ContainerGroup(location=LOCATION,
                            containers=[container],
                            os_type=OperatingSystemTypes.linux,
-                           identity=identity,
+                          # identity=identity,
                            restart_policy="OnFailure",
                            ImageRegistryCredential=image_registry_credentials
                            )
