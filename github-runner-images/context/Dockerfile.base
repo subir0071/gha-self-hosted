@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     tar \
     python3 \
     python3-pip \
+    libicu-dev \
     && apt-get clean
 
 # Set working directory

@@ -4,12 +4,12 @@ import os
 import jwt
 import subprocess
 
-PEM_FILE = os.getenv("PEM_FILE")
+PEM_FILE = os.getenv("PEM_CONTENT")
 GH_CLIENT_ID = os.getenv("GH_CLIENT_ID")
 
-# Open PEM
-# with open(PEM_PATH, 'rb') as pem_file:
-#     signing_key = pem_file.read()
+# Write PEM
+with open('key_file.pem', 'w') as pem_file:
+     pem_file.write(PEM_FILE)
 
 payload = {
     # Issued at time

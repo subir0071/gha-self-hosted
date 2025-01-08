@@ -18,6 +18,7 @@ from azure.mgmt.containerinstance.models import (
     OperatingSystemTypes,
     EnvironmentVariable,
     ContainerPort,
+    ContainerGroupRestartPolicy,
     Port,
     IpAddress,
 )
@@ -114,14 +115,15 @@ def create_container_instance(runner_label):
                            containers=[container],
                            os_type=OperatingSystemTypes.linux,
                           # identity=identity,
-                           restart_policy="OnFailure",
+                           restart_policy=ContainerGroupRestartPolicy.never,
                            image_registry_credentials=image_registry_credentials
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
                                                  container_group_name="container-group",
-                                                 container_group=group)
+                                                 container_group=group).wait()
 
+  logging.info("Container group created")
   container_group = aci_client.container_groups.get(RESOURCE_GROUP_NAME,
                                                       "container-group")
   
