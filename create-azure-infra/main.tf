@@ -72,7 +72,8 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     "AZURE_ACR_USER"                  = azurerm_key_vault_secret.gha_kv_acr_username.name
     "AZURE_ACR_PASS"                  = azurerm_key_vault_secret.gha_kv_acr_pass.name
     "GH_APP_PEM_FILE"                 = azurerm_key_vault_secret.gha_kv_gh_pemfile.name
-    "GH_APP_CLIENT_ID"                 = azurerm_key_vault_secret.gha_kv_gh_app_clientid.name
+    "GH_APP_CLIENT_ID"                = azurerm_key_vault_secret.gha_kv_gh_app_clientid.name
+    "GITHUB_ORG_NAME"                 = var.GITHUB_ORG_NAME 
     "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
     "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
     "AZURE_LOCATION"                  = var.location
