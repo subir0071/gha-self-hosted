@@ -41,6 +41,7 @@ CONTAINER_NAME = os.getenv("CONTAINER_NAME", "my-container")
 CPU_CORE_COUNT = float(os.getenv("CONTAINER_CPU", 1))
 MEMORY_IN_GB = float(os.getenv("CONTAINER_MEMORY", 1.5))
 USER_ASSIGNED_IDENTITY_NAME = os.getenv("AZURE_USER_ASSIGNED_IDENT_NAME")
+LOG_ANALYTICS_WS_ID = os.getenv("LOG_ANALYTICS_WS_ID")
 
 def retrieve_kv_secret():
   key_vault_url = f"https://{ KV_NAME }.vault.azure.net/"
@@ -95,15 +96,7 @@ def create_container_instance(runner_label):
   # Configure the container
   container_resource_requirements = ResourceRequirements(
         requests=container_resource_requests)
- 
-  # identity_resource_id = f"/subscriptions/{SUBSCRIPTION_ID}/resourceGroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{USER_ASSIGNED_IDENTITY_NAME}"
-  # identity={"type": "UserAssigned",
-  #         "user_assigned_identities": {
-  #             identity_resource_id: {}
-  #             }
-  #         }
-  
-  
+   
   container = Container(name="test-container",
                           image=container_image_name,
                           resources=container_resource_requirements,
@@ -116,7 +109,8 @@ def create_container_instance(runner_label):
                            os_type=OperatingSystemTypes.linux,
                           # identity=identity,
                            restart_policy=ContainerGroupRestartPolicy.never,
-                           image_registry_credentials=image_registry_credentials
+                           image_registry_credentials=image_registry_credentials,
+                           log_analytics=LOG_ANALYTICS_WS_ID
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,

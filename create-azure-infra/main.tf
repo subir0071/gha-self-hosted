@@ -67,6 +67,7 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
+    "LOG_ANALYTICS_WS_ID"             = azurerm_log_analytics_workspace.gha_alaw.id
     "AZURE_CONTAINER_REGISTRY"        = azurerm_container_registry.gha_runner_acr.name
     "AZURE_KV_NAME"                   = azurerm_key_vault.gha_runner_kv.name
     "AZURE_ACR_USER"                  = azurerm_key_vault_secret.gha_kv_acr_username.name
@@ -178,4 +179,12 @@ resource "azurerm_key_vault_secret" "gha_kv_acr_pass" {
   name         = "${var.project}-${var.env}-kv-acr-pass"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  azurerm_container_registry.gha_runner_acr.admin_password
+}
+
+# Define a Log Analytics Workspace
+resource "azurerm_log_analytics_workspace" "gha_alaw" {
+  name                = "${var.project}-${var.env}-log-workspace"
+  location            = azurerm_resource_group.gha_runner_rg.location
+  resource_group_name = azurerm_resource_group.gha_runner_rg.name
+  sku                 = "PerGB2018"
 }
