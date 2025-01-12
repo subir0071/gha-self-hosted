@@ -13,21 +13,20 @@
 pip3 install -r requirements.txt
 runner_token=$(python3 generate_jwt.py)
 export RUNNER_ALLOW_RUNASROOT=1
-echo "runner jwt token $runner_token"
 
 installation_token=$(curl -X POST \
      -H "Authorization: Bearer $runner_token" \
      -H "Accept: application/vnd.github.v3+json" \
-     https://api.github.com/app/installations/$GH_APP_INSTT_ID/access_tokens | jq '.token')
+     https://api.github.com/app/installations/$GH_APP_INSTT_ID/access_tokens | jq -r '.token')
 
-curl --request POST \
+registration_token=$(curl --request POST \
 --url "https://api.github.com/orgs/$ORG_NAME/actions/runners/registration-token" \
 --header "Authorization: Bearer $installation_token" \
---header "X-GitHub-Api-Version: 2022-11-28"
+--header "X-GitHub-Api-Version: 2022-11-28" | jq -r '.token')
 
  ./config.sh --url https://github.com/$ORG_NAME \
                 --token $registration_token \
-                --name my-runner \
+                --name $(cat /proc/self/cgroup | grep "cpu:" | awk -F/ '{print $NF}') \
                 --labels linux,x86_64,test \
                 --unattended \
                 --ephemeral
