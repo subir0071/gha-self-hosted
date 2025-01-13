@@ -14,7 +14,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
     connection="storageAccountConnectionString"
 )
 def receiver_function(req: func.HttpRequest, msg: func.Out[str]) -> func.HttpResponse:
-
+    req_body = None
     try:
         # Parse the JSON payload from the request
         req_body = req.get_json()
