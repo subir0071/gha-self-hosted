@@ -7,7 +7,7 @@
 # PEM_CONTENT :: The content of the Github App PEM file.
 # GH_CLIENT_ID :: Client ID of the Github APP
 # GH_APP_INSTT_ID :: Installation ID of the Github App
-# ORG_NAME : Github Organisation Name
+# GH_ORG_NAME : Github Organisation Name
 # #######################################################################
 
 pip3 install -r requirements.txt
@@ -20,11 +20,11 @@ installation_token=$(curl -X POST \
      https://api.github.com/app/installations/$GH_APP_INSTT_ID/access_tokens | jq -r '.token')
 
 registration_token=$(curl --request POST \
---url "https://api.github.com/orgs/$ORG_NAME/actions/runners/registration-token" \
+--url "https://api.github.com/orgs/$GH_ORG_NAME/actions/runners/registration-token" \
 --header "Authorization: Bearer $installation_token" \
 --header "X-GitHub-Api-Version: 2022-11-28" | jq -r '.token')
 
- ./config.sh --url https://github.com/$ORG_NAME \
+ ./config.sh --url https://github.com/$GH_ORG_NAME \
                 --token $registration_token \
                 --name $(cat /proc/self/cgroup | grep "cpu:" | awk -F/ '{print $NF}') \
                 --labels linux,x86_64,test \
