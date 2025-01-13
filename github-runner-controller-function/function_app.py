@@ -89,7 +89,6 @@ def create_container_instance(runner_label, workflow_job_id):
   container_environment_variable, image_registry_credentials = retrieve_kv_secret()
   
   container_image_name="awesomeprojdevacr.azurecr.io/gha-runner:latest"
-  #container_image_name = "nginx:latest"
   
   # Configure the container
   container_resource_requirements = ResourceRequirements(
@@ -98,8 +97,8 @@ def create_container_instance(runner_label, workflow_job_id):
   container = Container(name="test-container",
                           image=container_image_name,
                           resources=container_resource_requirements,
-                          environment_variables=container_environment_variable,
-                          ports=[ContainerPort(port=80)])
+                          environment_variables=container_environment_variable
+                          )
   
   logging.info("Container Config done")
   group = ContainerGroup(location=LOCATION,
@@ -126,7 +125,7 @@ def create_container_instance(runner_label, workflow_job_id):
 def parse_incoming_payload(msg):
   data = json.loads(msg)
   labels = data.get("labels", [])
-  workflow_job_id = data.get("workflow_job", {}).get("id")
+  workflow_job_id = data.get("id")
   return labels, workflow_job_id
 
 

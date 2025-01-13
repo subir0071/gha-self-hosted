@@ -21,11 +21,11 @@ def receiver_function(req: func.HttpRequest, msg: func.Out[str]) -> func.HttpRes
     if request_action != 'queued':
         return func.HttpResponse(f"No runner created for {request_action} webhook", status_code=200)
     
-    label_list = {"labels": req_body.get('workflow_job',{}).get('labels', [])}
+    workflow_job = req_body.get('workflow_job',{})
     
     try:
         # Serialize the JSON to a string to send to the queue
-        message = json.dumps(label_list)
+        message = json.dumps(workflow_job)
 
         # Send the message to the queue
         msg.set(message)
