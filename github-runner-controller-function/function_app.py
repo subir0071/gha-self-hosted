@@ -19,8 +19,6 @@ from azure.mgmt.containerinstance.models import (
     EnvironmentVariable,
     ContainerPort,
     ContainerGroupRestartPolicy,
-    Port,
-    IpAddress,
 )
 
 
@@ -77,9 +75,9 @@ def retrieve_kv_secret():
   ]
   return container_environment_variable, image_registry_credentials
 
-def create_container_instance(runner_label):
+def create_container_instance(runner_label, workflow_job_id):
   # Use DefaultAzureCredential for authentication
-  logging.info("Start Containefr Creation function")
+  logging.info("Start Container Creation function")
   credential = DefaultAzureCredential()
   aci_client = ContainerInstanceManagementClient(credential, SUBSCRIPTION_ID)
   logging.info("Subcription done")
@@ -90,9 +88,6 @@ def create_container_instance(runner_label):
   # Retrieve GH APP secrets from key-vault
   container_environment_variable, image_registry_credentials = retrieve_kv_secret()
   
-
-  # container_group_name = f"{ runner_label }"
-  # container_image_name = f"{ AZURE_CONTAINER_REGISTRY }/{ runner_label }:latest"
   container_image_name="awesomeprojdevacr.azurecr.io/gha-runner:latest"
   #container_image_name = "nginx:latest"
   
@@ -116,7 +111,7 @@ def create_container_instance(runner_label):
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
-                                                 container_group_name="container-group",
+                                                 container_group_name=f"gha-cont-ins-{workflow_job_id}",
                                                  container_group=group).wait()
 
   logging.info("Container group created")
@@ -131,7 +126,8 @@ def create_container_instance(runner_label):
 def parse_incoming_payload(msg):
   data = json.loads(msg)
   labels = data.get("labels", [])
-  return labels
+  workflow_job_id = data.get("workflow_job", {}).get("id")
+  return labels, workflow_job_id
 
 
 @app.queue_trigger(arg_name="azqueue", queue_name=os.getenv("QUEUE_NAME"),
@@ -139,8 +135,8 @@ def parse_incoming_payload(msg):
 def controller_function(azqueue: func.QueueMessage):
     logging.info('Python Queue trigger processed a message: %s',
                 azqueue.get_body().decode('utf-8'))
-    runner_label = parse_incoming_payload(azqueue.get_body().decode('utf-8'))
-    create_container_instance(runner_label)
+    runner_label, workflow_job_id = parse_incoming_payload(azqueue.get_body().decode('utf-8'))
+    create_container_instance(runner_label, workflow_job_id)
     
 
 
