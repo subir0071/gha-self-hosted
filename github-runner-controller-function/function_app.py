@@ -63,7 +63,7 @@ def retrieve_kv_secret():
   except Exception as ex:
     print(f"An error occurred in extracting the secrets: {ex}")
   container_environment_variable = [
-    EnvironmentVariable(name="PEM_file", secure_value=gh_app_pem_file.value),
+    EnvironmentVariable(name="PEM_CONTENT", secure_value=gh_app_pem_file.value),
     EnvironmentVariable(name="GH_CLIENT_ID", secure_value=gh_app_client_id.value),
     EnvironmentVariable(name="GH_APP_INSTT_ID", secure_value=gh_app_instt_id.value),
     EnvironmentVariable(name="GH_ORG_NAME", value=GH_ORG_NAME)
