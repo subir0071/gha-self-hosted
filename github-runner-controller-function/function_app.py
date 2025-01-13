@@ -32,7 +32,9 @@ KV_NAME = os.getenv("AZURE_KV_NAME")
 ACR_USER = os.getenv("AZURE_ACR_USER")
 ACR_PASS = os.getenv("AZURE_ACR_PASS")
 GH_APP_PEM_FILE_KEY = os.getenv("GH_APP_PEM_FILE")
-GH_APP_CLIENT_ID_KEY = os.getenv("GH_APP_CLIENT_ID")
+GH_APP_CLIENT_ID_KEY = os.getenv("GH_APP_CLIENT_ID_KEY")
+GH_APP_INSTT_ID_KEY = os.getenv("GH_APP_INSTT_ID_KEY")
+GH_ORG_NAME = os.getenv("GH_ORG_NAME")
 SUBSCRIPTION_ID = os.getenv("AZURE_SUBSCRIPTION_ID")
 RESOURCE_GROUP_NAME = os.getenv("AZURE_RESOURCE_GROUP")
 LOCATION = os.getenv("AZURE_LOCATION", "eastus2")  # Default to 'eastus2'
@@ -40,8 +42,6 @@ CONTAINER_IMAGE = os.getenv("CONTAINER_IMAGE", "nginx")  # Default to 'nginx'
 CONTAINER_NAME = os.getenv("CONTAINER_NAME", "my-container")
 CPU_CORE_COUNT = float(os.getenv("CONTAINER_CPU", 1))
 MEMORY_IN_GB = float(os.getenv("CONTAINER_MEMORY", 1.5))
-USER_ASSIGNED_IDENTITY_NAME = os.getenv("AZURE_USER_ASSIGNED_IDENT_NAME")
-LOG_ANALYTICS_WS_ID = os.getenv("LOG_ANALYTICS_WS_ID")
 
 def retrieve_kv_secret():
   key_vault_url = f"https://{ KV_NAME }.vault.azure.net/"
@@ -56,14 +56,17 @@ def retrieve_kv_secret():
   try:
     gh_app_pem_file = client.get_secret(GH_APP_PEM_FILE_KEY)
     gh_app_client_id = client.get_secret(GH_APP_CLIENT_ID_KEY)
+    gh_app_instt_id = client.get_secret(GH_APP_INSTT_ID_KEY)
     acr_user = client.get_secret(ACR_USER)
     acr_pass = client.get_secret(ACR_PASS)
     logging.info(f"gh client id { gh_app_client_id.value }")
   except Exception as ex:
-    print(f"An error occurred: {ex}")
+    print(f"An error occurred in extracting the secrets: {ex}")
   container_environment_variable = [
     EnvironmentVariable(name="PEM_file", secure_value=gh_app_pem_file.value),
-    EnvironmentVariable(name="GH_CLIENT_ID", secure_value=gh_app_client_id.value)
+    EnvironmentVariable(name="GH_CLIENT_ID", secure_value=gh_app_client_id.value),
+    EnvironmentVariable(name="GH_APP_INSTT_ID", secure_value=gh_app_instt_id.value),
+    EnvironmentVariable(name="GH_ORG_NAME", value=GH_ORG_NAME)
   ]
   image_registry_credentials = [
     ImageRegistryCredential(
@@ -90,7 +93,7 @@ def create_container_instance(runner_label):
 
   # container_group_name = f"{ runner_label }"
   # container_image_name = f"{ AZURE_CONTAINER_REGISTRY }/{ runner_label }:latest"
-  container_image_name="awesomeprojdevacr.azurecr.io/gha-runner:202501120128"
+  container_image_name="awesomeprojdevacr.azurecr.io/gha-runner:latest"
   #container_image_name = "nginx:latest"
   
   # Configure the container
@@ -109,8 +112,7 @@ def create_container_instance(runner_label):
                            os_type=OperatingSystemTypes.linux,
                           # identity=identity,
                            restart_policy=ContainerGroupRestartPolicy.never,
-                           image_registry_credentials=image_registry_credentials,
-                           log_analytics=LOG_ANALYTICS_WS_ID
+                           image_registry_credentials=image_registry_credentials
                            )
 
   aci_client.container_groups.begin_create_or_update(resource_group_name=RESOURCE_GROUP_NAME,
