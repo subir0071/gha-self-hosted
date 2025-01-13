@@ -33,6 +33,8 @@ resource "azurerm_linux_function_app" "gha_runner_receiver_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
+    "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
+    "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
     "ENABLE_ORYX_BUILD"              = "true"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
     "FUNCTIONS_WORKER_RUNTIME"       = "python"
