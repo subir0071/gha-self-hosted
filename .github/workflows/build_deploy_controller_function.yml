@@ -8,16 +8,6 @@ on:
 
   workflow_dispatch:
 
-  
-  # workflow_call:
-  #   secrets:
-  #     AZURE_CLIENT_ID:
-  #       required: true
-  #     AZURE_TENANT_ID:
-  #       required: true
-  #     AZURE_SUBSCRIPTION_ID:
-  #       required: true
-
 permissions:
   id-token: write 
   contents: read 
@@ -37,12 +27,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: dev
-
-    defaults:
-      run:
-        shell: bash
-        working-directory: github-runner-controller-function
-
     steps:
     - name: 'Checkout Controller Function'
       uses: actions/checkout@v4
@@ -54,12 +38,6 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-
-    # - name: 'Resolve Project Dependencies Using Pip'
-    #   shell: bash
-    #   run: |
-    #       python -m pip install --upgrade pip
-    #       pip install -r requirements.txt --target=".python_packages/lib/site-packages"
 
 
     - name: 'Login via Azure CLI'
