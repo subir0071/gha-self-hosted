@@ -135,7 +135,7 @@ def controller_function(azqueue: func.QueueMessage):
     logging.info('Python Queue trigger processed a message: %s',
                 azqueue.get_body().decode('utf-8'))
     runner_label, workflow_job_id = parse_incoming_payload(azqueue.get_body().decode('utf-8'))
-    create_container_instance(runner_label, workflow_job_id)
+    #create_container_instance(runner_label, workflow_job_id)
     
 
 
