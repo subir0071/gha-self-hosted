@@ -1,19 +1,11 @@
 name: Deploy Controller Function to Azure
 run-name: Deploy Controller Function to Azure
 on:
-  # push:
-  #   paths:
-  #   - github-runner-controller-function/**
+  push:
+    paths:
+      - github-runner-controller-function/**
 
-  workflow_call:
-
-    secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
+  workflow_dispatch:
 
 permissions:
   id-token: write 
