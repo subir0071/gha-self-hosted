@@ -39,7 +39,6 @@ resource "azurerm_linux_function_app" "gha_runner_receiver_function_app" {
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
     "FUNCTIONS_WORKER_RUNTIME"       = "python"
     "AzureWebJobsFeatureFlags"       = "EnableWorkerIndexing"
-    "FUNCTIONS_WORKER_RUNTIME"       = "python"
     "QUEUE_NAME"                     = azurerm_storage_queue.gh_runner_asq.name
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
@@ -80,15 +79,14 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
     "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
     "AZURE_LOCATION"                  = var.location
-    "ENABLE_ORYX_BUILD"               = "true"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT"  = "true"
     "FUNCTIONS_WORKER_RUNTIME"        = "python"
     "AzureWebJobsFeatureFlags"        = "EnableWorkerIndexing"
-    "FUNCTIONS_WORKER_RUNTIME"        = "python"
     "QUEUE_NAME"                      = azurerm_storage_queue.gh_runner_asq.name
     "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
     "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
+    "ENABLE_ORYX_BUILD"              = "true"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
   }
 
   site_config {
