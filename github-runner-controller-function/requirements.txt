@@ -4,6 +4,8 @@
 
 azure-functions
 azure-storage-queue
-azure-mgmt-containerinstance
+azure-mgmt-containerinstance>=10.0.0
 azure-identity
-
+azure-keyvault-secrets
+azure-storage-blob
+azure-mgmt-containerregistry

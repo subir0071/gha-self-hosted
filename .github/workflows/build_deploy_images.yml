@@ -7,16 +7,6 @@ on:
 
   workflow_dispatch:
 
-  # workflow_call:
-
-  #   secrets:
-  #     AZURE_CLIENT_ID:
-  #       required: true
-  #     AZURE_TENANT_ID:
-  #       required: true
-  #     AZURE_SUBSCRIPTION_ID:
-  #       required: true
-
 permissions:
   id-token: write 
   contents: read 
@@ -72,7 +62,9 @@ jobs:
         # todo use env vars for acr params
         
     - name: tag the image before push
-      run: docker tag gha-runner:latest awesomeprojdevacr.azurecr.io/gha-runner:$NOW
+      run: |
+       docker tag gha-runner:latest awesomeprojdevacr.azurecr.io/gha-runner:$NOW
+       docker tag gha-runner:latest awesomeprojdevacr.azurecr.io/gha-runner:latest
 
       # Build and push the Docker image
     - name: Push the images
@@ -82,3 +74,4 @@ jobs:
 
         # Push the Docker image to ACR
         docker push awesomeprojdevacr.azurecr.io/gha-runner:$NOW
+        docker push awesomeprojdevacr.azurecr.io/gha-runner:latest

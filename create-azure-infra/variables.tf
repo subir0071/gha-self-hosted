@@ -62,3 +62,7 @@ variable "GITHUB_APP_CLIENTID" {
   type = string
 }
 
+variable "GITHUB_ORG_NAME" {
+  description = "Github Organisation name for which the self hosted runners would be configured"
+  type = string
+}

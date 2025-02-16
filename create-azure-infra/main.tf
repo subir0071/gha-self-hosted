@@ -33,11 +33,12 @@ resource "azurerm_linux_function_app" "gha_runner_receiver_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
+    "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
+    "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
     "ENABLE_ORYX_BUILD"              = "true"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
     "FUNCTIONS_WORKER_RUNTIME"       = "python"
     "AzureWebJobsFeatureFlags"       = "EnableWorkerIndexing"
-    "FUNCTIONS_WORKER_RUNTIME"       = "python"
     "QUEUE_NAME"                     = azurerm_storage_queue.gh_runner_asq.name
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
@@ -67,18 +68,25 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
   functions_extension_version = "~4"
 
   app_settings = {
-    "AZURE_SUBSCRIPTION_ID"                = data.azurerm_client_config.current.subscription_id
+    "AZURE_CONTAINER_REGISTRY"        = azurerm_container_registry.gha_runner_acr.name
+    "AZURE_KV_NAME"                   = azurerm_key_vault.gha_runner_kv.name
+    "AZURE_ACR_USER"                  = azurerm_key_vault_secret.gha_kv_acr_username.name
+    "AZURE_ACR_PASS"                  = azurerm_key_vault_secret.gha_kv_acr_pass.name
+    "GH_APP_PEM_FILE"                 = azurerm_key_vault_secret.gha_kv_gh_pemfile.name
+    "GH_APP_CLIENT_ID_KEY"            = azurerm_key_vault_secret.gha_kv_gh_app_clientid.name
+    "GH_APP_INSTT_ID_KEY"             = azurerm_key_vault_secret.gha_kv_gh_instt_id.name
+    "GH_ORG_NAME"                     = var.GITHUB_ORG_NAME 
+    "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
     "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
     "AZURE_LOCATION"                  = var.location
-    "ENABLE_ORYX_BUILD"               = "true"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT"  = "true"
     "FUNCTIONS_WORKER_RUNTIME"        = "python"
     "AzureWebJobsFeatureFlags"        = "EnableWorkerIndexing"
-    "FUNCTIONS_WORKER_RUNTIME"        = "python"
     "QUEUE_NAME"                      = azurerm_storage_queue.gh_runner_asq.name
     "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
     "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
+    "ENABLE_ORYX_BUILD"              = "true"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
   }
 
   site_config {
@@ -99,6 +107,11 @@ resource "azurerm_role_assignment" "gha_controller_fn_ra" {
   principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
 }
 
+resource "azurerm_role_assignment" "keyvault_secrets_user" {
+  scope                = azurerm_key_vault.gha_runner_kv.id
+  role_definition_name = data.azurerm_role_definition.akv_reader.name
+  principal_id         = azurerm_linux_function_app.gha_runner_controller_function_app.identity[0].principal_id
+}
 
 # Azure Storage Queue
 resource "azurerm_storage_queue" "gh_runner_asq" {
@@ -119,6 +132,7 @@ resource "azurerm_container_registry" "gha_runner_acr" {
   resource_group_name = azurerm_resource_group.gha_runner_rg.name
   location            = var.location
   sku                 = var.acr_sku
+  admin_enabled       = true
 }
 
 resource "azurerm_key_vault" "gha_runner_kv" {
@@ -128,66 +142,41 @@ resource "azurerm_key_vault" "gha_runner_kv" {
   tenant_id                  = data.azurerm_client_config.current.tenant_id
   sku_name                   = var.kv_sku_name
   soft_delete_retention_days = 7
-
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
-
-    key_permissions = [
-      "Create",
-      "Delete",
-      "Get",
-      "Purge",
-      "Recover",
-      "Update",
-      "GetRotationPolicy",
-      "SetRotationPolicy"
-    ]
-
-    secret_permissions = [
-      "Set", "Get", "List", "Delete", "Purge",
-    ]
-  }
+  enable_rbac_authorization = true
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_app_id" {
   name         = "${var.project}-${var.env}-kv-gh-appid"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_ID
-
-  lifecycle {
-    ignore_changes = [value] # Prevent Terraform from overwriting the existing value
-  }
-
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_instt_id" {
   name         = "${var.project}-${var.env}-kv-gh-insttid"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_INSTALLATION_ID
-
-   lifecycle {
-    ignore_changes = [value] 
-  }
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_pemfile" {
   name         = "${var.project}-${var.env}-kv-gh-pemfile"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_PEM_FILE
-
-   lifecycle {
-    ignore_changes = [value] 
-  }
 }
 
 resource "azurerm_key_vault_secret" "gha_kv_gh_app_clientid" {
   name         = "${var.project}-${var.env}-kv-gh-app-clientid"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  var.GITHUB_APP_CLIENTID
-
-   lifecycle {
-    ignore_changes = [value]
-  }
 }
 
+resource "azurerm_key_vault_secret" "gha_kv_acr_username" {
+  name         = "${var.project}-${var.env}-kv-acr-username"
+  key_vault_id = azurerm_key_vault.gha_runner_kv.id
+  value =  azurerm_container_registry.gha_runner_acr.admin_username
+}
+
+resource "azurerm_key_vault_secret" "gha_kv_acr_pass" {
+  name         = "${var.project}-${var.env}-kv-acr-pass"
+  key_vault_id = azurerm_key_vault.gha_runner_kv.id
+  value =  azurerm_container_registry.gha_runner_acr.admin_password
+}

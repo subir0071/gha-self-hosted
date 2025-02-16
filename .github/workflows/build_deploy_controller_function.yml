@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
 
 name: Build and deploy Controller Function
 
@@ -11,19 +8,9 @@ on:
 
   workflow_dispatch:
 
-  
-  # workflow_call:
-  #   secrets:
-  #     AZURE_CLIENT_ID:
-  #       required: true
-  #     AZURE_TENANT_ID:
-  #       required: true
-  #     AZURE_SUBSCRIPTION_ID:
-  #       required: true
-
 permissions:
   id-token: write 
-  contents: read  
+  contents: read 
 
 defaults:
   run:
@@ -31,54 +18,39 @@ defaults:
     working-directory: github-runner-controller-function
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function' # set this to the path to your web app project, defaults to the repository root
-  PYTHON_VERSION: '3.11' # set this to the python version to use (supports 3.6, 3.7, 3.8)
-  # AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  # AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  # AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-
+  AZURE_FUNCTIONAPP_NAME: 'awesomeproj-dev-controller-function-app'   # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function'       # set this to the path to your function app project, defaults to the repository root
+  PYTHON_VERSION: '3.11'                   # set this to the dotnet version to use (e.g. '2.1.x', '3.1.x', '5.0.x')
+  
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     environment: dev
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: 'Checkout Controller Function'
+      uses: actions/checkout@v4
+      with: 
+        sparse-checkout:
+          github-runner-controller-function
+    
+    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Setup Python version
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: pwd
-        run: pwd
-
-      - name: ls -l
-        run: ls -l
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      # Optional: Add step to run tests here
-
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: 'Deploy to Azure Functions'
-        uses: Azure/functions-action@v1
-        id: deploy-to-function
-        with:
-          app-name: 'awesomeproj-dev-controller-function-app'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          
-     
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      id: fa
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+        

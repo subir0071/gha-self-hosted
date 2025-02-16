@@ -1,4 +1,4 @@
-ARG BASE_IMAGE
+ARG BASE_IMAGE=gh-runner-base:latest
 FROM ${BASE_IMAGE}
 
 # Set up the application
