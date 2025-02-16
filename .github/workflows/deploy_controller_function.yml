@@ -54,6 +54,7 @@ jobs:
     - name: test
       run: |
         zip -r function.zip .
+        wait
         pwd
         ls -l
 
