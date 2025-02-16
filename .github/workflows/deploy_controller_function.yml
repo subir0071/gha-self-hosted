@@ -53,6 +53,7 @@ jobs:
 
     - name: test
       run: |
+        zip -r function.zip .
         pwd
         ls -l
 
@@ -61,4 +62,4 @@ jobs:
       id: fa
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: '.'
+        package: 'function.zip'
