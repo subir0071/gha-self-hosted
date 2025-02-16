@@ -1,5 +1,5 @@
 .sensitive.sh
-.vscode
+
 terraform.tfstate
 terraform.tfstate.backup
 .terraform/
@@ -10,3 +10,4 @@ secrets.json
 destroyplan
 secret.*
 test_http_function.http
+.vscode
