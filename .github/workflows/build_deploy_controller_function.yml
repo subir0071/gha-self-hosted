@@ -34,18 +34,18 @@ jobs:
         sparse-checkout:
           github-runner-controller-function
 
-    # - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
-    #   uses: actions/setup-python@v4
-    #   with:
-    #     python-version: ${{ env.PYTHON_VERSION }}
+    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
     
-    # - name: 'Resolve Project Dependencies Using Pip'
-    #   shell: bash
-    #   run: |
-    #       pushd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-    #       python -m pip install --upgrade pip
-    #       pip install -r requirements.txt --target=".python_packages/lib/site-packages"
-    #       popd
+    - name: 'Resolve Project Dependencies Using Pip'
+      shell: bash
+      run: |
+          pushd '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
     
     - name: 'Login via Azure CLI'
       uses: azure/login@v2
