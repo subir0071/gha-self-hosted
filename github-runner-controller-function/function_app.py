@@ -115,7 +115,7 @@ def create_container_instance(runner_label, workflow_job_id):
 
   logging.info("Container group created")
   container_group = aci_client.container_groups.get(RESOURCE_GROUP_NAME,
-                                                      "container-group")
+                                                      f"gha-cont-ins-{workflow_job_id}")
   
 
   
@@ -135,7 +135,7 @@ def controller_function(azqueue: func.QueueMessage):
     logging.info('Python Queue trigger processed a message: %s',
                 azqueue.get_body().decode('utf-8'))
     runner_label, workflow_job_id = parse_incoming_payload(azqueue.get_body().decode('utf-8'))
-    #create_container_instance(runner_label, workflow_job_id)
+    create_container_instance(runner_label, workflow_job_id)  #workflow_job_id "test-wf-id"
     
 
 
