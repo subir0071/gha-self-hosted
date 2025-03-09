@@ -1,6 +1,6 @@
 
 name: Build and deploy Controller Function
-
+run-name: Build and deploy Controller Function
 on:
   push:
     paths:
@@ -34,11 +34,6 @@ jobs:
         sparse-checkout:
           github-runner-controller-function
     
-    - name: Setup Python ${{ env.PYTHON_VERSION }} Environment
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-
 
     - name: 'Login via Azure CLI'
       uses: azure/login@v2
