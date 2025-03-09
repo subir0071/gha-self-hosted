@@ -1,5 +1,4 @@
-name: Deploy Controller Function to Azure
-run-name: Deploy Controller Function to Azure
+name: Deploy Controller Function to Azure -- old
 on:
   push:
     paths:
