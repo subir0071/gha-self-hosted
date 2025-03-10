@@ -18,7 +18,7 @@ defaults:
     working-directory: github-runner-controller-function
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'awesomeproj-dev-controller-function-app'   # set this to your function app name on Azure
+  AZURE_FUNCTIONAPP_NAME: ''   # set this to your function app name on Azure
   AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function'       # set this to the path to your function app project, defaults to the repository root
   PYTHON_VERSION: '3.11'                   # set this to the dotnet version to use (e.g. '2.1.x', '3.1.x', '5.0.x')
   
@@ -57,8 +57,6 @@ jobs:
       uses: Azure/functions-action@v1
       id: fa
       with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        app-name: 'awesomeproj-dev-controller-function-app'
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        scm-do-build-during-deployment: true
-        enable-oryx-build: true
         
