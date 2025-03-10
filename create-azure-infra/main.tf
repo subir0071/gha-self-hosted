@@ -87,6 +87,7 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
     "ENABLE_ORYX_BUILD"              = "true"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
+    "WEBSITE_RUN_FROM_PACKAGE" = "1"
   }
 
   site_config {
