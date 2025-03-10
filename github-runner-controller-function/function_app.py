@@ -17,10 +17,8 @@ from azure.mgmt.containerinstance.models import (
     ResourceRequirements,
     OperatingSystemTypes,
     EnvironmentVariable,
-    ContainerPort,
     ContainerGroupRestartPolicy,
 )
-
 
 app = func.FunctionApp()
 
