@@ -34,18 +34,19 @@ jobs:
         sparse-checkout:
           github-runner-controller-function
 
-    # - name: 'Login via Azure CLI'
-    #   uses: azure/login@v2
-    #   with:
-    #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: 'Run Azure Functions Action'
       uses: Azure/functions-action@v1
       id: fa
       with:
-        app-name: 'awesomeproj-dev-controller-function-app'
+        app-name: 'awesomeproj-dev-controller-function-app' 
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        publish-profile: ${{ secrets.PUBLISH_PROFILE}}
+        scm-do-build-during-deployment: true
+        enable-oryx-build: true
         
