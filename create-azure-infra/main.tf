@@ -206,7 +206,7 @@ resource "azurerm_linux_function_app" "gha_runner_cleanup_function_app" {
     "AzureWebJobsFeatureFlags"        = "EnableWorkerIndexing"
     "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
-    "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
+   # "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
     "ENABLE_ORYX_BUILD"              = "true"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
   }
