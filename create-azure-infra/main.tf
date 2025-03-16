@@ -190,15 +190,7 @@ resource "azurerm_linux_function_app" "gha_runner_cleanup_function_app" {
   https_only                  = false
   functions_extension_version = "~4"
 
-  app_settings = {
-    # "AZURE_CONTAINER_REGISTRY"        = azurerm_container_registry.gha_runner_acr.name
-    # "AZURE_KV_NAME"                   = azurerm_key_vault.gha_runner_kv.name
-    # "AZURE_ACR_USER"                  = azurerm_key_vault_secret.gha_kv_acr_username.name
-    # "AZURE_ACR_PASS"                  = azurerm_key_vault_secret.gha_kv_acr_pass.name
-    # "GH_APP_PEM_FILE"                 = azurerm_key_vault_secret.gha_kv_gh_pemfile.name
-    # "GH_APP_CLIENT_ID_KEY"            = azurerm_key_vault_secret.gha_kv_gh_app_clientid.name
-    # "GH_APP_INSTT_ID_KEY"             = azurerm_key_vault_secret.gha_kv_gh_instt_id.name
-    # "GH_ORG_NAME"                     = var.GITHUB_ORG_NAME 
+  app_settings = { 
     "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
     "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
     "AZURE_LOCATION"                  = var.location
