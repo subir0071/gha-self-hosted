@@ -1,8 +1,11 @@
 import logging
 import os
+import datetime
 import azure.functions as func
 from azure.identity import DefaultAzureCredential
-from azure.mgmt.containerservice import ContainerInstanceManagementClient
+from azure.mgmt.containerinstance import ContainerInstanceManagementClient
+
+
 
 
 app = func.FunctionApp()
@@ -16,14 +19,12 @@ logging.basicConfig(level=logging.INFO)
 
 # Set up Azure client
 credential = DefaultAzureCredential()
-container_client = ContainerInstanceManagementClient(credential, SUBSCRIPTION_ID)
+container_client = ContainerInstanceManagementClient(credential,"c540fdb6-d9c4-4d9e-9f1d-91743899df62")
 
 # Timer-triggered function that checks and deletes terminated containers every 5 minutes
 @app.function_name(name="DeleteTerminatedContainers")
-@app.schedule("0 */5 * * * *", arg_name="mytimer", run_on_start=True)
-def main(mytimer: func.TimerRequest) -> None:
-    utc_timestamp = mytimer.timestamp
-    logging.info(f"Checking for terminated containers at {utc_timestamp}")
+@app.schedule(schedule="0 */2 * * * *", arg_name="mytimer", run_on_start=True)
+def main(func.TimerRequest) -> None:
 
     try:
         # List all container groups in the specified resource group

@@ -3,5 +3,5 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
-azure-mgmt-containerservice 
+azure-mgmt-containerinstance 
 azure-identity

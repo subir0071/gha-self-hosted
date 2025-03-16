@@ -220,3 +220,9 @@ resource "azurerm_linux_function_app" "gha_runner_cleanup_function_app" {
     type = "SystemAssigned"
   }
 }
+
+resource "azurerm_role_assignment" "example" {
+  principal_id   = azurerm_function_app.example.identity[0].principal_id
+  role_definition_name = "Contributor" 
+  scope           = "/subscriptions/${data.azurerm_client_config.current.subscription_id}/resourceGroups/${azurerm_resource_group.gha_runner_rg.name}/providers/Microsoft.ContainerInstance/containergroups"
+}
