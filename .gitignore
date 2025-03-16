@@ -11,3 +11,4 @@ destroyplan
 secret.*
 test_http_function.http
 .vscode
+__pycache__/
