@@ -3,9 +3,5 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
-azure-storage-queue
-azure-mgmt-containerinstance>=10.0.0
+azure-mgmt-containerinstance 
 azure-identity
-azure-keyvault-secrets
-azure-mgmt-containerregistry
-azure.containerregistry

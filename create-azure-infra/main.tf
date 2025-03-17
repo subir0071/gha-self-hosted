@@ -42,7 +42,7 @@ resource "azurerm_linux_function_app" "gha_runner_receiver_function_app" {
     "QUEUE_NAME"                     = azurerm_storage_queue.gh_runner_asq.name
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
-    "WEBSITE_RUN_FROM_PACKAGE"         = "1" 
+ #   "WEBSITE_RUN_FROM_PACKAGE"         = "1" 
   }
 
   site_config {
@@ -50,10 +50,6 @@ resource "azurerm_linux_function_app" "gha_runner_receiver_function_app" {
       python_version = "3.11"
     }
   }
-
-  # identity {
-  #   type = "SystemAssigned"
-  # }
 
 }
 
@@ -84,10 +80,12 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     "QUEUE_NAME"                      = azurerm_storage_queue.gh_runner_asq.name
     "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
-    "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
+#    "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
     "ENABLE_ORYX_BUILD"              = "true"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
   }
+
+  #zip_deploy_file = "./gha-runner-controller.zip"
 
   site_config {
     application_stack {
@@ -179,4 +177,44 @@ resource "azurerm_key_vault_secret" "gha_kv_acr_pass" {
   name         = "${var.project}-${var.env}-kv-acr-pass"
   key_vault_id = azurerm_key_vault.gha_runner_kv.id
   value =  azurerm_container_registry.gha_runner_acr.admin_password
+}
+
+
+resource "azurerm_linux_function_app" "gha_runner_cleanup_function_app" {
+  name                        = "${var.project}-${var.env}-cleanup-function-app"
+  resource_group_name         = azurerm_resource_group.gha_runner_rg.name
+  location                    = var.location
+  service_plan_id             = azurerm_service_plan.gha_runner_asp.id
+  storage_account_name        = azurerm_storage_account.gha_runner_sa.name
+  storage_account_access_key  = azurerm_storage_account.gha_runner_sa.primary_access_key
+  https_only                  = false
+  functions_extension_version = "~4"
+
+  app_settings = { 
+    "AZURE_SUBSCRIPTION_ID"           = data.azurerm_client_config.current.subscription_id
+    "AZURE_RESOURCE_GROUP"            = azurerm_resource_group.gha_runner_rg.name
+    "AZURE_LOCATION"                  = var.location
+    "FUNCTIONS_WORKER_RUNTIME"        = "python"
+    "AzureWebJobsFeatureFlags"        = "EnableWorkerIndexing"
+    "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.gha_runner_aai.instrumentation_key
+    "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
+   # "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
+    "ENABLE_ORYX_BUILD"              = "true"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
+  }
+
+  site_config {
+    application_stack {
+      python_version = "3.11"
+    }
+  }
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_role_assignment" "gha_cleanup_fn_ci" {
+  principal_id   = azurerm_linux_function_app.gha_runner_cleanup_function_app.identity[0].principal_id
+  role_definition_name = data.azurerm_role_definition.aci_contributor.name
+  scope                = "/subscriptions/${data.azurerm_client_config.current.subscription_id}"
 }

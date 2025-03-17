@@ -6,16 +6,6 @@ on:
     - github-runner-receiver-function/**
   
   workflow_dispatch:
-    
-  # workflow_call:
-
-  #   secrets:
-  #     AZURE_CLIENT_ID:
-  #       required: true
-  #     AZURE_TENANT_ID:
-  #       required: true
-  #     AZURE_SUBSCRIPTION_ID:
-  #       required: true
 
 permissions:
   id-token: write 
