@@ -43,8 +43,8 @@ GitHub Webhook → Azure Function (HTTP Trigger)
 - Azure Subscription
 - GitHub Repository with Admin Access
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
-- A GitHub Personal Access Token (PAT)
-- Docker + GitHub Container Registry or Azure Container Registry
+- A GitHub Organization with Github App configured
+- Docker + Azure Container Registry
 
 ---
 
@@ -113,7 +113,7 @@ jobs:
 
 ## 📁 Diagram
 
-> Architecture diagram source is available in [draw.io XML format](./diagram.drawio).
+> <img src="design_diagram.png" width="300" />
 
 ---
 
