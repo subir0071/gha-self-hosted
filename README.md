@@ -1,4 +1,4 @@
-# 🛠️ Azure Self-Hosted GitHub Actions Runner (Serverless & Containerized)
+# 🛠️ Azure Self-Hosted GitHub Actions Runner (Serverless & Containerized) [WIP]
 
 This project provides a scalable, cost-efficient way to run **self-hosted GitHub Actions runners** on-demand using **Azure Container Instances (ACI)**, **Azure Functions**, and **Azure Storage Queues**.
 
@@ -17,6 +17,20 @@ GitHub Webhook → Azure Function (HTTP Trigger)
                          ↓
            Azure Container Instance (Runner)
 ```
+
+## 📁 Diagram
+
+> <img src="design_diagram.png" width="300" />
+
+```
+(A) Azure Receiver Function      (1) Webhook received by Azure Receiver Function
+(B) Azure Queue Storage          (2) Message sent to Azure Queue
+(C) Azure Controller Function    (3) Azure controller function is triggered on message
+(D) Azure Container Instance     (4) Create Azure Container Instance 
+(E) Azure Key Vault              
+(F) Azure Container Registry 
+```
+---
 
 - **GitHub Webhook**: Sends workflow job events to Azure.
 - **Azure Functions**: 
@@ -51,29 +65,16 @@ GitHub Webhook → Azure Function (HTTP Trigger)
 ## 🚀 Deployment Steps
 
 1. **Provision Azure Resources**
-   - Resource Group
-   - Storage Account with Queue
-   - Key Vault
-   - Azure Container Registry
-   - Azure Functions (with two triggers)
-
-2. **Configure GitHub Webhook**
-   - Point it to the HTTP-triggered Azure Function endpoint.
-   - Use a GitHub PAT stored securely in Azure Key Vault.
-
-3. **Build & Push Runner Image**
-   ```bash
-   docker build -t <your-registry>/gh-runner:latest .
-   docker push <your-registry>/gh-runner:latest
-   ```
-
-4. **Configure Azure Function**
-   - Grant access to ACR and Key Vault.
-   - Set up environment variables for Function app.
-
-5. **Test Workflow**
-   - Trigger a GitHub Action job.
-   - Monitor Azure Function logs and container activity.
+   - Setup Terraform Backend in Azure 
+     - Execute Action Workflow `create_azure_remote_backend.yml`
+   - Setup GHA Infrastructure in Azure
+     - Execute Action Workflow `deploy_azure_infra.yml`
+   - Deploy Receiver Function
+     - Execute Action Workflow `deploy_receiver_function.yml`
+   - Deploy Controller Function
+     - Execute Action Function `deploy_controller_function.yml`
+   - Deploy container images specific to runner
+     - Execute Action Workflow `build_deploy_images.yml`
 
 ---
 
@@ -108,12 +109,6 @@ jobs:
 - Use **Application Insights** for Function logging.
 - Monitor Container Instance logs via Azure Portal or CLI.
 - Set up alerts on failures or scaling thresholds.
-
----
-
-## 📁 Diagram
-
-> <img src="design_diagram.png" width="300" />
 
 ---
 
