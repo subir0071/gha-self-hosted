@@ -86,7 +86,7 @@ def create_container_instance(runner_label, workflow_job_id):
   # Retrieve GH APP secrets from key-vault
   container_environment_variable, image_registry_credentials = retrieve_kv_secret()
   
-  container_image_name="awesomeprojdevacr.azurecr.io/gha-runner:latest"
+  container_image_name=f"awesomeprojdevacr.azurecr.io/{runner_label}:latest"
   
   # Configure the container
   container_resource_requirements = ResourceRequirements(
