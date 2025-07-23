@@ -1,6 +1,0 @@
-POST  https://awesomeproj-dev-receiver-function-app.azurewebsites.net/api/receiver_function?code=<redacted>  HTTP/1.1
-
-{
-    "Hello": "Subir"
-}
-

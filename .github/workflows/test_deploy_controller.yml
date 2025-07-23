@@ -1,0 +1,46 @@
+name: Test Deploy Controller Function
+run-name: Test Deploy Controller Function
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write 
+  contents: read 
+
+jobs:
+  test-deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+    
+    steps:
+    - name: 'Checkout Repository'
+      uses: actions/checkout@v4
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v2
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: 'List files before deployment'
+      run: |
+        echo "=== Repository structure ==="
+        ls -la
+        echo "=== Controller function directory ==="
+        ls -la github-runner-controller-function/
+
+    - name: 'Deploy using zip'
+      run: |
+        cd github-runner-controller-function
+        # Remove development artifacts
+        rm -rf .venv .vscode __pycache__ .pytest_cache .git* *.pyc
+        # Create deployment package
+        zip -r ../controller-function.zip . -x "*.git*" "*/__pycache__/*" "*.pyc"
+        cd ..
+        
+        # Deploy using Azure CLI
+        az functionapp deployment source config-zip \
+          --resource-group "awesomeproj-dev-rg" \
+          --name "awesomeproj-dev-controller-function-app" \
+          --src controller-function.zip
