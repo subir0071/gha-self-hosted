@@ -33,6 +33,13 @@ jobs:
         sparse-checkout:
           github-runner-controller-function
 
+    - name: list
+      run: |
+        echo "=== Repository structure ==="
+        ls -la
+        echo "=== Controller function directory ==="
+        ls -la github-runner-controller-function/
+
 
     - name: 'Login via Azure CLI'
       uses: azure/login@v2
