@@ -8,4 +8,4 @@ azure-mgmt-containerinstance>=10.0.0
 azure-identity
 azure-keyvault-secrets
 azure-mgmt-containerregistry
-azure.containerregistry
+azure-containerregistry
