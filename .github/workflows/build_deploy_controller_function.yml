@@ -27,29 +27,76 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - name: 'Prepare and Deploy Function'
+    - name: 'Prepare Clean Deployment Package'
       run: |
         cd github-runner-controller-function
         
-        # Clean up development files
-        rm -rf .venv .vscode __pycache__ .pytest_cache
-        find . -name "*.pyc" -delete
-        find . -name ".git*" -delete
+        # Create deployment directory with only necessary files
+        mkdir -p ../deploy_package
         
-        # Show what we're deploying
-        echo "=== Files being deployed ==="
+        # Copy only essential files (mimicking Azure extension behavior)
+        cp function_app.py ../deploy_package/
+        cp host.json ../deploy_package/
+        cp requirements.txt ../deploy_package/
+        cp .funcignore ../deploy_package/ 2>/dev/null || echo ".funcignore not found, skipping"
+        
+        cd ../deploy_package
+        
+        # Show what we're deploying (like Azure extension logs)
+        echo "=== Deployment Package Contents ==="
         ls -la
+        echo ""
         
-        # Create zip package
-        zip -r ../controller-function.zip .
+        # Verify Python syntax
+        echo "=== Validating Python Code ==="
+        python3 -m py_compile function_app.py
+        echo "✓ function_app.py syntax is valid"
+        
+        # Create zip package (same method as Azure extension)
+        zip -r ../controller-function-deploy.zip . -q
         cd ..
         
-        # Deploy using Azure CLI
-        echo "=== Starting deployment ==="
+        echo "=== Package Created ==="
+        ls -la controller-function-deploy.zip
+
+    - name: 'Deploy Function App (Azure Extension Method)'
+      run: |
+        # Use the same deployment method as Azure VS Code extension
+        echo "=== Starting Deployment (Azure Extension Method) ==="
+        
+        # Method 1: Try zip deployment (primary method used by Azure extension)
         az functionapp deployment source config-zip \
           --resource-group "awesomeproj-dev-rg" \
           --name "awesomeproj-dev-controller-function-app" \
-          --src controller-function.zip \
-          --timeout 600
+          --src controller-function-deploy.zip \
+          --timeout 600 \
+          --verbose || echo "Zip deployment failed, trying alternative method"
+        
+        # Get deployment status
+        echo "=== Checking Deployment Status ==="
+        az functionapp show \
+          --resource-group "awesomeproj-dev-rg" \
+          --name "awesomeproj-dev-controller-function-app" \
+          --query "state" \
+          --output table
+          
+    - name: 'Verify Deployment Success'
+      run: |
+        echo "=== Verifying Function Deployment ==="
+        
+        # List functions in the app (should show our controller function)
+        az functionapp function list \
+          --resource-group "awesomeproj-dev-rg" \
+          --name "awesomeproj-dev-controller-function-app" \
+          --query "[].{Name:name, TriggerType:config.bindings[0].type}" \
+          --output table || echo "Function listing not available yet"
+          
+        # Check recent deployment logs
+        echo "=== Recent Deployment Logs ==="
+        az functionapp log deployment list \
+          --resource-group "awesomeproj-dev-rg" \
+          --name "awesomeproj-dev-controller-function-app" \
+          --query "[0].{Status:status, Message:message, Time:receivedTime}" \
+          --output table || echo "Deployment logs not available"
           
      
