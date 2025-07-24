@@ -81,7 +81,65 @@ Before deploying this solution, ensure you have:
 
 ---
 
-## 🚀 Quick Start Guide
+## � Project Structure
+
+```
+gha-self-hosted/
+├── 📁 .github/workflows/           # GitHub Actions deployment workflows
+│   ├── build_deploy_controller_function.yml
+│   ├── build_deploy_images.yml
+│   ├── create_azure_remote_backend.yml
+│   ├── deploy_azure_infra.yml
+│   ├── deploy_receiver_function.yml
+│   └── test_deploy_controller.yml
+├── 📁 create-azure-infra/          # Main Terraform infrastructure
+│   ├── main.tf                     # Azure resources definition
+│   ├── variables.tf                # Input variables
+│   ├── outputs.tf                  # Output values
+│   ├── data.tf                     # Data sources
+│   ├── provider.tf                 # Provider configuration
+│   ├── dev.tfvars                  # Environment-specific values
+│   └── dev-backend.config          # Terraform backend configuration
+├── 📁 create-remote-state/         # Terraform backend setup
+│   ├── main.tf                     # Remote state infrastructure
+│   └── variables.tf                # Backend variables
+├── 📁 github-runner-receiver-function/  # HTTP trigger function
+│   ├── function_app.py             # Webhook receiver logic
+│   ├── requirements.txt            # Python dependencies
+│   ├── host.json                   # Function configuration
+│   ├── local.settings.json         # Local development settings
+│   └── .funcignore                 # Function ignore file
+├── 📁 github-runner-controller-function/ # Queue trigger function
+│   ├── function_app.py             # Container provisioning logic
+│   ├── requirements.txt            # Python dependencies
+│   ├── host.json                   # Function configuration
+│   ├── local.settings.json         # Local development settings
+│   └── .funcignore                 # Function ignore file
+├── 📁 github-runner-cleanup-function/   # Timer trigger function
+│   ├── function_app.py             # Cleanup logic
+│   ├── requirements.txt            # Python dependencies
+│   ├── host.json                   # Function configuration
+│   ├── local.settings.json         # Local development settings
+│   └── .funcignore                 # Function ignore file
+├── 📁 github-runner-images/        # Docker container definitions
+│   ├── docker-compose.yml          # Multi-stage build configuration
+│   ├── test.http                   # API testing file
+│   └── context/
+│       ├── Dockerfile.base         # Base Ubuntu image with tools
+│       ├── Dockerfile.runner       # GitHub Actions runner image
+│       ├── Dockerfile.test         # Test container image
+│       └── script/
+│           ├── app.sh              # Runner registration script
+│           ├── generate_jwt.py     # GitHub App JWT generation
+│           └── requirements.txt    # Python dependencies for scripts
+├── 📄 design_diagram.png           # Architecture diagram
+├── 📄 README.md                    # This file
+└── 📄 .gitignore                   # Git ignore rules
+```
+
+---
+
+## �🚀 Deployment Steps
 
 ### Step 1: Clone and Setup
 
