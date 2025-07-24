@@ -1,5 +1,5 @@
-name: Deploy Controller Function to Azure
-run-name: Deploy Controller Function to Azure
+name: Build and deploy Controller Function
+run-name: Build and deploy Controller Function
 
 on:
   push:
@@ -20,6 +20,7 @@ env:
   AZURE_FUNCTIONAPP_NAME: 'awesomeproj-dev-controller-function-app'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function' # working-directory already set to this
   PYTHON_VERSION: '3.11'
+
 
 jobs:
   build-and-deploy:
