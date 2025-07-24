@@ -81,8 +81,8 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
    # "WEBSITE_RUN_FROM_PACKAGE"        = 1
-    "scm-do-build-during-deployment"  = true
-    "enable-oryx-build"               = true
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"  = true
+    "ENABLE_ORYX_BUILD"               = true
   }
 
   #zip_deploy_file = "./gha-runner-controller.zip"
