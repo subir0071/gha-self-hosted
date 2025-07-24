@@ -80,9 +80,10 @@ resource "azurerm_linux_function_app" "gha_runner_controller_function_app" {
     "QUEUE_NAME"                      = azurerm_storage_queue.gh_runner_asq.name
     "APPINSIGHTS_INSTRUMENTATIONKEY"  = azurerm_application_insights.gha_runner_aai.instrumentation_key
     "storageAccountConnectionString"  = azurerm_storage_account.gha_runner_sa.primary_connection_string
-#    "WEBSITE_RUN_FROM_PACKAGE"        = "1" 
-    "ENABLE_ORYX_BUILD"              = "true"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
+   # "WEBSITE_RUN_FROM_PACKAGE"        = 1
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"  = true
+    "ENABLE_ORYX_BUILD"               = true
+
   }
 
   #zip_deploy_file = "./gha-runner-controller.zip"

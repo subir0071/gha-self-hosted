@@ -1,16 +1,15 @@
-
 name: Build and deploy Controller Function
 run-name: Build and deploy Controller Function
+
 on:
   push:
     paths:
       - github-runner-controller-function/**
-
   workflow_dispatch:
 
 permissions:
-  id-token: write 
-  contents: read 
+  id-token: write
+  contents: read
 
 defaults:
   run:
@@ -18,54 +17,39 @@ defaults:
     working-directory: github-runner-controller-function
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function' # set this to the path to your web app project, defaults to the repository root
-  PYTHON_VERSION: '3.11' # set this to the python version to use (supports 3.6, 3.7, 3.8)
-  # AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  # AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  # AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  AZURE_FUNCTIONAPP_NAME: 'awesomeproj-dev-controller-function-app'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function' # working-directory already set to this
+  PYTHON_VERSION: '3.11'
 
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: dev
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Python version
-        uses: actions/setup-python@v5
+      - name: 'Checkout Controller Function'
+        uses: actions/checkout@v3
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          sparse-checkout:
+            github-runner-controller-function
 
-      - name: Create and start virtual environment
+      - name: list
         run: |
-          python -m venv venv
-          source venv/bin/activate
+          echo "=== Repository structure ==="
+          ls -la
 
-      - name: pwd
-        run: pwd
-
-      - name: ls -l
-        run: ls -l
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      # Optional: Add step to run tests here
-
-      - name: Login to Azure
+      - name: 'Login via Azure CLI'
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: 'Deploy to Azure Functions'
+      - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
-        id: deploy-to-function
         with:
           app-name: 'awesomeproj-dev-controller-function-app'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          remote-build: true
           
-     

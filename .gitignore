@@ -1,14 +1,62 @@
 .sensitive.sh
 
+# Terraform state files
 terraform.tfstate
 terraform.tfstate.backup
 .terraform/
 *.pem
 .terraform.lock.hcl
+terraform.tfvars.backup
+*.auto.tfvars
+.terraform.d/
+
+# Secrets and sensitive files
 secrets.json
-.venv
-destroyplan
 secret.*
-test_http_function.http
-.vscode
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+
+# Python virtual environments and packages
+.venv/
+venv/
+env/
+ENV/
+.python_packages/
+.conda/
+*.pyc
+*.pyo
+*.pyd
 __pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Azure and development files
+destroyplan
+tfplan.out
+*.out
+test_http_function.http
+local.settings.json
+.funcignore
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
