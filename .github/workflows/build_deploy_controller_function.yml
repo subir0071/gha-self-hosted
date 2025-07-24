@@ -65,4 +65,4 @@ jobs:
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: function.zip
+          package: ./github-runner-controller-function/function.zip
