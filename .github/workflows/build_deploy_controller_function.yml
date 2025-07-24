@@ -18,7 +18,7 @@ defaults:
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'awesomeproj-dev-controller-function-app'
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # working-directory already set to this
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: './github-runner-controller-function' # working-directory already set to this
   PYTHON_VERSION: '3.11'
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
         with:
           sparse-checkout:
             github-runner-controller-function
-            
+
       - name: list
         run: |
           echo "=== Repository structure ==="
